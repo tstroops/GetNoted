@@ -65,5 +65,5 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:auth-kt")
 
     // For networking using android by ktor
-    implementation("io.ktor:ktor-client-android:3.3.0")
+    implementation("io.ktor:ktor-client-android:3.4.0")
 }
