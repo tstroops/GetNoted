@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("plugin.serialization") version "2.3.0"
 }
 
 android {
@@ -33,9 +34,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
     }
+
     buildFeatures {
         compose = true
     }
@@ -62,7 +66,15 @@ dependencies {
     implementation(platform("io.github.jan-tennert.supabase:bom:3.3.0"))
 
     // These will be the supabase modules we need. For now just auth since thats the first feature
-    implementation("io.github.jan-tennert.supabase:auth-kt")
+    implementation("io.github.jan-tennert.supabase:auth-kt:3.3.0")
+
+    // Installing stuff for postgrest
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:3.3.0")
+
+    implementation("io.github.jan-tennert.supabase:realtime-kt:3.3.0")
+
+    //implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
+
 
     // For networking using android by ktor
     implementation("io.ktor:ktor-client-android:3.4.0")
