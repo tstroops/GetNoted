@@ -50,7 +50,9 @@ fun AuthButton(modifier: Modifier = Modifier) {
         }) {
             Text(text ="Sign In")
         }
+
         Spacer(modifier= Modifier.height(16.dp))
+
         Button(onClick = {
             val intent = Intent(context, SignUp::class.java)
             context.startActivity(intent)
