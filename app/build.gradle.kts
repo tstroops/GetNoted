@@ -7,9 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.getnoted"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.getnoted"
@@ -63,19 +61,18 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // Supabase BOM (stable version)
-    implementation(platform("io.github.jan-tennert.supabase:bom:3.3.0"))
+    implementation(platform(libs.supabase.bom))
 
     // These will be the supabase modules we need. For now just auth since thats the first feature
-    implementation("io.github.jan-tennert.supabase:auth-kt:3.3.0")
+    implementation(libs.supabase.auth)
 
     // Installing stuff for postgrest
-    implementation("io.github.jan-tennert.supabase:postgrest-kt:3.3.0")
+    implementation(libs.supabase.postgrest)
 
-    implementation("io.github.jan-tennert.supabase:realtime-kt:3.3.0")
+    implementation(libs.supabase.realtime)
 
     //implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 
-
     // For networking using android by ktor
-    implementation("io.ktor:ktor-client-android:3.4.0")
+    implementation(libs.ktor.client.android)
 }
