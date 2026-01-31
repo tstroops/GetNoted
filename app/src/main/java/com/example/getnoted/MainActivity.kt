@@ -1,5 +1,6 @@
 package com.example.getnoted
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.getnoted.ui.theme.GetNotedTheme
@@ -25,7 +27,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GetNotedTheme {
-                Greeting(modifier = Modifier
+                AuthButton(modifier = Modifier
                     .fillMaxSize()
                     .wrapContentSize(Alignment.Center))
             }
@@ -34,19 +36,25 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(modifier: Modifier = Modifier) {
-    var result = 1
+fun AuthButton(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
 
-        Button(onClick = {result=(1..6).random()}) {
+        Button(onClick = {
+            val intent = Intent(context, SignIn::class.java)
+            context.startActivity(intent)
+        }) {
             Text(text ="Sign In")
         }
         Spacer(modifier= Modifier.height(16.dp))
-        Button(onClick = {result=(1..6).random()}) {
+        Button(onClick = {
+            val intent = Intent(context, SignUp::class.java)
+            context.startActivity(intent)
+        }) {
             Text(text ="Sign Up")
         }
     }
@@ -55,5 +63,5 @@ fun Greeting(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    Greeting()
+    AuthButton()
     }
