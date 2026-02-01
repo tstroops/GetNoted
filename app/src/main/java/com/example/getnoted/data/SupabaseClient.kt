@@ -8,6 +8,8 @@ val supabase = createSupabaseClient(
     supabaseKey = "sb_publishable_9ZS2S98VDJ7oJBShVZX9UQ_2cs2b-ze"
 ) {
     install(Postgrest)
-    install(Auth)
+    install(Auth) {
+
+    }
 }
 
