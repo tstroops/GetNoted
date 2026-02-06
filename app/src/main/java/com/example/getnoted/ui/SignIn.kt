@@ -1,18 +1,10 @@
 package com.example.getnoted.ui
 
-import android.os.Bundle
-import android.content.Intent
-import androidx.compose.ui.platform.LocalContext
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -25,34 +17,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.getnoted.MainActivity
 import com.example.getnoted.ui.theme.GetNotedTheme
 
-class SignIn : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            GetNotedTheme {
-                SignInPage(modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center)
-                )
-            }
-        }
-    }
-}
-
 @Composable
-fun SignInPage(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
+fun SignInPage(
+    onBackClicked: () -> Unit,
+    onSignInClicked: () -> Unit,
+    modifier: Modifier = Modifier) {
     var username by remember{ mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    Button(modifier = Modifier.padding(top=25.dp, start = 10.dp), onClick = {
-        val intent = Intent(context, MainActivity::class.java)
-        context.startActivity(intent)
-    }) {
+    Button(modifier = Modifier.padding(top=25.dp, start = 10.dp),
+        onClick = onBackClicked
+    ) {
         Text(text = "<")
     }
 
@@ -62,7 +39,7 @@ fun SignInPage(modifier: Modifier = Modifier) {
     ) {
         UserSignIn(label = "Username", userIn = username, onValueChange = {username = it})
         UserSignIn(label = "Password", userIn = password, onValueChange = {password = it})
-        Button(onClick = {/*TODO*/}){
+        Button(onClick = onSignInClicked){
             Text(text = "Sign In")
         }
 
@@ -90,6 +67,9 @@ fun UserSignIn(
 @Composable
 fun SignInPreview() {
     GetNotedTheme {
-        SignInPage()
+        SignInPage(
+            onBackClicked = {},
+            onSignInClicked = {}
+        )
     }
 }
