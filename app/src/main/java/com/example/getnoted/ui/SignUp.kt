@@ -10,16 +10,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.getnoted.viewModel.SignUpViewModel
 import com.example.getnoted.ui.theme.GetNotedTheme
+
+private val viewModel = SignUpViewModel()
+
+
 
 @Composable
 fun SignUpPage(
@@ -27,10 +28,8 @@ fun SignUpPage(
     onSignUpClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     val context = LocalContext.current
-    var username by remember{ mutableStateOf("") }
-    var passwordOne by remember { mutableStateOf("") }
-    var passwordTwo by remember { mutableStateOf("") }
 
     Button(modifier = Modifier.padding(top=25.dp, start = 10.dp),
         onClick = onBackClicked
@@ -42,25 +41,25 @@ fun SignUpPage(
         verticalArrangement = Arrangement.Center
     ) {
         UserSignUp(
-            label = "Username",
-            userIn = username,
-            onValueChange = {username = it}
+            label = "Email",
+            userIn = viewModel.email,
+            onValueChange = {viewModel.updateEmail(it)}
         )
         UserSignUp(
             label = "Password",
-            userIn = passwordOne,
-            onValueChange = {passwordOne = it}
+            userIn = viewModel.password,
+            onValueChange = {viewModel.updatePassword(it)}
         )
         UserSignUp(
             label = "Confirm Password",
-            userIn = passwordTwo,
-            onValueChange = {passwordTwo = it}
+            userIn = viewModel.passwordConfirm,
+            onValueChange = {viewModel.updatePasswordConfirm(it)}
         )
         Button(onClick = {
-            if(passwordOne.length<8){
+            if(viewModel.password.length<8){
                 Toast.makeText(context, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show()
             }
-            else if(passwordOne != passwordTwo){
+            else if(viewModel.password != viewModel.passwordConfirm){
                 Toast.makeText(context, "Passwords must match", Toast.LENGTH_SHORT).show()
             }
             else{

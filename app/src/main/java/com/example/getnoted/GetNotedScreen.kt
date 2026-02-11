@@ -2,6 +2,7 @@ package com.example.getnoted
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.getnoted.ui.SignInPage
 import com.example.getnoted.ui.SignUpPage
 import com.example.getnoted.ui.WelcomeScreen
+import com.example.getnoted.viewModel.SignUpViewModel
 
 
 enum class GetNotedScreen(){
@@ -35,9 +37,10 @@ fun GetNotedScreen(
         }
 
         composable(route = GetNotedScreen.SignUp.name){
+            val signUpViewModel: SignUpViewModel = viewModel()
             SignUpPage(
                 onBackClicked = {cancelAuth(navController)},
-                onSignUpClicked = {navController.navigate(GetNotedScreen.Welcome.name)},
+                onSignUpClicked = { signUpViewModel.signUp() },
                 modifier = modifier
             )
         }
