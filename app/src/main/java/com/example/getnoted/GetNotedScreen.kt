@@ -1,6 +1,8 @@
 package com.example.getnoted
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -10,10 +12,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.getnoted.ui.SignInPage
 import com.example.getnoted.ui.SignUpPage
 import com.example.getnoted.ui.WelcomeScreen
-import com.example.getnoted.viewModel.SignUpViewModel
+import com.example.getnoted.viewmodel.AuthViewModel
 
-
-enum class GetNotedScreen(){
+enum class GetNotedScreen {
     Welcome,
     SignUp,
     SignIn
@@ -22,33 +23,49 @@ enum class GetNotedScreen(){
 @Composable
 fun GetNotedScreen(
     navController: NavHostController = rememberNavController(),
-    modifier: Modifier = Modifier
-){
+    modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel = viewModel()
+) {
+    // When viewmodel changes are made update UI state
+    val uiState by authViewModel.uiState.collectAsState()
+
     NavHost(
         navController = navController,
         startDestination = GetNotedScreen.Welcome.name,
     ) {
         composable(route = GetNotedScreen.Welcome.name) {
             WelcomeScreen(
-                onSignUpClicked = {navController.navigate(GetNotedScreen.SignUp.name)},
-                onSignInClicked = {navController.navigate(GetNotedScreen.SignIn.name)},
+                onSignUpClicked = {
+                    authViewModel.resetFields()
+                    navController.navigate(GetNotedScreen.SignUp.name)
+                },
+                onSignInClicked = {
+                    authViewModel.resetFields()
+                    navController.navigate(GetNotedScreen.SignIn.name)
+                },
                 modifier = modifier
             )
         }
 
-        composable(route = GetNotedScreen.SignUp.name){
-            val signUpViewModel: SignUpViewModel = viewModel()
+        composable(route = GetNotedScreen.SignUp.name) {
             SignUpPage(
-                onBackClicked = {cancelAuth(navController)},
-                onSignUpClicked = { signUpViewModel.signUp() },
+                uiState = uiState,
+                onEmailChange = { authViewModel.emailChanged(it) },
+                onPasswordChange = { authViewModel.passwordChanged(it) },
+                onPasswordConfirmChange = { authViewModel.passwordConfirmChanged(it) },
+                onBackClicked = { cancelAuth(navController) },
+                onSignUpClicked = { authViewModel.signUp() },
                 modifier = modifier
             )
         }
 
         composable(route = GetNotedScreen.SignIn.name){
             SignInPage(
+                uiState = uiState,
+                onEmailChange = {authViewModel.emailChanged(it)},
+                onPasswordChange = {authViewModel.passwordChanged(it)},
                 onBackClicked = {cancelAuth(navController)},
-                onSignInClicked = {/*TODO*/},
+                onSignInClicked = { authViewModel.signIn()},
                 modifier = modifier
             )
         }
@@ -57,6 +74,6 @@ fun GetNotedScreen(
 
 fun cancelAuth(
     navController: NavHostController
-){
-    navController.popBackStack(route=GetNotedScreen.Welcome.name, inclusive = false)
+) {
+    navController.popBackStack(route = GetNotedScreen.Welcome.name, inclusive = false)
 }
