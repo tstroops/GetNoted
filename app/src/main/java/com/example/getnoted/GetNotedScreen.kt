@@ -9,21 +9,26 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.getnoted.ui.NotebooksPage
+import com.example.getnoted.ui.NotesPage
 import com.example.getnoted.ui.SignInPage
 import com.example.getnoted.ui.SignUpPage
 import com.example.getnoted.ui.WelcomeScreen
-import com.example.getnoted.viewmodel.AuthViewModel
+import com.example.getnoted.viewModel.AuthState
+import com.example.getnoted.viewModel.AuthViewModel
 
 enum class GetNotedScreen {
     Welcome,
     SignUp,
-    SignIn
+    SignIn,
+    Notebooks,
+    Notes
 }
 
 @Composable
 fun GetNotedScreen(
-    navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController(),
     authViewModel: AuthViewModel = viewModel()
 ) {
     // When viewmodel changes are made update UI state
@@ -31,7 +36,8 @@ fun GetNotedScreen(
 
     NavHost(
         navController = navController,
-        startDestination = GetNotedScreen.Welcome.name,
+        startDestination = if (uiState.authState == AuthState.IsAuthorized) GetNotedScreen.Notebooks.name
+            else GetNotedScreen.Welcome.name,
     ) {
         composable(route = GetNotedScreen.Welcome.name) {
             WelcomeScreen(
@@ -65,8 +71,22 @@ fun GetNotedScreen(
                 onEmailChange = {authViewModel.emailChanged(it)},
                 onPasswordChange = {authViewModel.passwordChanged(it)},
                 onBackClicked = {cancelAuth(navController)},
-                onSignInClicked = { authViewModel.signIn()},
+                onSignInClicked = { authViewModel.signIn(); if(uiState.authState == AuthState.IsAuthorized) navController.navigate(GetNotedScreen.Notebooks.name)},
                 modifier = modifier
+            )
+        }
+
+        composable(route = GetNotedScreen.Notebooks.name){
+            NotebooksPage(
+                onNotebookClicked = { navController.navigate(GetNotedScreen.Notes.name) },
+                notebooks = arrayOf(1,2)
+            )
+        }
+
+        composable(route = GetNotedScreen.Notes.name){
+            NotesPage(
+                onNoteClicked = {},
+                notes = arrayOf(1,2)
             )
         }
     }

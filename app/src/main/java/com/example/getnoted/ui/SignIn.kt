@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.getnoted.ui.theme.GetNotedTheme
-import com.example.getnoted.viewmodel.AuthUiState
+import com.example.getnoted.viewModel.AuthUiState
 
 @Composable
 fun SignInPage(

@@ -1,4 +1,4 @@
-package com.example.getnoted.viewmodel
+package com.example.getnoted.viewModel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,7 +31,7 @@ class AuthViewModel(): ViewModel() {
     private val TAG = "AuthViewModel"
 
     // Expose UI state
-    // The private editable uistate only changeable by viewmodel
+    // The private editable uiState only changeable by viewmodel
     private val _uiState = MutableStateFlow(AuthUiState())
     // The public read only ui state that the UI can read to display
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
@@ -117,12 +117,12 @@ class AuthViewModel(): ViewModel() {
         // Grab current UI fields
         val email = _uiState.value.email
         val password = _uiState.value.password
-        Log.d(TAG, "Signing up with email")
+        Log.d(TAG, "Signing in with email")
 
         viewModelScope.launch {
             try {
                 AuthRepository.signIn(email, password)
-                Log.d(TAG, "Sign Ip Success :)")
+                Log.d(TAG, "Sign In Success :)")
 
                 // If successful, update status
                 _uiState.update { currentState ->

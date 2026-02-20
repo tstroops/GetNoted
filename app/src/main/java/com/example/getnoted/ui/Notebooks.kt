@@ -7,13 +7,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun notebook(text:String){
-    val notebookNum = 3
+fun NotebooksPage(
+        onNotebookClicked: ()->Unit,
+        notebooks: Array<Int>
+){
     Column {
-        for (i in 1..notebookNum){
-            Button(onClick = {/*TODO*/}) {
-                Text(text = "$text $i")
+        Text(text ="Notebooks")
+        for (notebook in notebooks){
+            val notebookID = notebook
+            Button(onClick = onNotebookClicked) {
+                Text(text = "Notebook $notebook")
             }
+        }
+        Button(onClick = {/*TODO*/ }) {
+            Text(text = "New Notebook")
+        }
+        Button(onClick = {/*TODO*/ }) {
+            Text(text = "Delete Notebook")
         }
     }
 }
@@ -21,5 +31,5 @@ fun notebook(text:String){
 @Preview
 @Composable
 fun PreviewNotebook(){
-    notebook("Notebook")
+    NotebooksPage(onNotebookClicked = {/*TODO*/}, notebooks = arrayOf(1,2))
 }
