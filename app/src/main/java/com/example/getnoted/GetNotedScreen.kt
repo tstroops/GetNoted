@@ -16,6 +16,7 @@ import com.example.getnoted.ui.SignUpPage
 import com.example.getnoted.ui.WelcomeScreen
 import com.example.getnoted.viewModel.AuthState
 import com.example.getnoted.viewModel.AuthViewModel
+import com.example.getnoted.viewModel.NotebooksViewModel
 
 enum class GetNotedScreen {
     Welcome,
@@ -29,10 +30,12 @@ enum class GetNotedScreen {
 fun GetNotedScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel(),
+    notebooksViewModel: NotebooksViewModel = viewModel()
 ) {
     // When viewmodel changes are made update UI state
     val uiState by authViewModel.uiState.collectAsState()
+    val nbUiState by notebooksViewModel.uiState.collectAsState()
 
     NavHost(
         navController = navController,
@@ -78,7 +81,10 @@ fun GetNotedScreen(
 
         composable(route = GetNotedScreen.Notebooks.name){
             NotebooksPage(
+                uiState = nbUiState,
                 onNotebookClicked = { navController.navigate(GetNotedScreen.Notes.name) },
+                onNewNotebookClicked = { /*TODO*/ },
+                onDeleteNotebookClicked = { /*TODO*/ },
                 notebooks = arrayOf(1,2)
             )
         }

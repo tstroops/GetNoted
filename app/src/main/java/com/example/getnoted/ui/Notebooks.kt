@@ -5,24 +5,29 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.getnoted.viewModel.NotebooksUiState
+import com.example.getnoted.viewModel.NotebooksViewModel
 
 @Composable
 fun NotebooksPage(
+        uiState: NotebooksUiState,
         onNotebookClicked: ()->Unit,
+        onNewNotebookClicked: ()->Unit,
+        onDeleteNotebookClicked: ()->Unit,
         notebooks: Array<Int>
 ){
     Column {
         Text(text ="Notebooks")
-        for (notebook in notebooks){
-            val notebookID = notebook
+        for (notebook in uiState.notebooks){
+            val notebookID = notebook.id
             Button(onClick = onNotebookClicked) {
-                Text(text = "Notebook $notebook")
+                Text(text = notebook.name)
             }
         }
-        Button(onClick = {/*TODO*/ }) {
+        Button(onClick = { onNewNotebookClicked() }) {
             Text(text = "New Notebook")
         }
-        Button(onClick = {/*TODO*/ }) {
+        Button(onClick = { onDeleteNotebookClicked() }) {
             Text(text = "Delete Notebook")
         }
     }
@@ -31,5 +36,10 @@ fun NotebooksPage(
 @Preview
 @Composable
 fun PreviewNotebook(){
-    NotebooksPage(onNotebookClicked = {/*TODO*/}, notebooks = arrayOf(1,2))
+    NotebooksPage(
+        uiState = NotebooksUiState(),
+        onNotebookClicked = {},
+        onNewNotebookClicked = {},
+        onDeleteNotebookClicked = {},
+        notebooks = arrayOf(1,2))
 }
