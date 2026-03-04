@@ -3,12 +3,16 @@ package com.example.getnoted
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.getnoted.ui.NotePage
 import com.example.getnoted.ui.NotebooksPage
 import com.example.getnoted.ui.NotesPage
 import com.example.getnoted.ui.SignInPage
@@ -16,23 +20,27 @@ import com.example.getnoted.ui.SignUpPage
 import com.example.getnoted.ui.WelcomeScreen
 import com.example.getnoted.viewModel.AuthState
 import com.example.getnoted.viewModel.AuthViewModel
+import com.example.getnoted.viewModel.NotebooksViewModel
 
 enum class GetNotedScreen {
     Welcome,
     SignUp,
     SignIn,
     Notebooks,
-    Notes
+    Notes,
+    Note
 }
 
 @Composable
 fun GetNotedScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel(),
+    notebooksViewModel: NotebooksViewModel = viewModel()
 ) {
     // When viewmodel changes are made update UI state
     val uiState by authViewModel.uiState.collectAsState()
+    val nbUiState by notebooksViewModel.uiState.collectAsState()
 
     NavHost(
         navController = navController,
@@ -78,15 +86,33 @@ fun GetNotedScreen(
 
         composable(route = GetNotedScreen.Notebooks.name){
             NotebooksPage(
+                uiState = nbUiState,
+                onCreateNotebookClicked = {notebooksViewModel.toggleCreate()},
+                onDeleteNotebookClicked = {notebooksViewModel.toggleDelete()},
+                onCancelNb = { notebooksViewModel.cancelRequest() },
+                onNameChange = {notebooksViewModel.updateName(it)},
                 onNotebookClicked = { navController.navigate(GetNotedScreen.Notes.name) },
-                notebooks = arrayOf(1,2)
+                notebooks = emptyList(),
+                modifier = modifier
             )
         }
 
         composable(route = GetNotedScreen.Notes.name){
             NotesPage(
                 onNoteClicked = {},
-                notes = arrayOf(1,2)
+                notes = arrayOf(1,2),
+                modifier = modifier
+            )
+        }
+
+        composable(route = GetNotedScreen.Note.name) {
+            var noteTextStub by remember { mutableStateOf("") }
+            NotePage(
+                modifier = modifier,
+                text = noteTextStub,
+                onTextChanged = { noteTextStub = it },
+                onBackClicked = { navController.popBackStack() },
+                onSaveClicked = { }
             )
         }
     }
