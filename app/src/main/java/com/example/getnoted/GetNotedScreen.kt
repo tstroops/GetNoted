@@ -3,12 +3,16 @@ package com.example.getnoted
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.getnoted.ui.NotePage
 import com.example.getnoted.ui.NotebooksPage
 import com.example.getnoted.ui.NotesPage
 import com.example.getnoted.ui.SignInPage
@@ -23,7 +27,8 @@ enum class GetNotedScreen {
     SignUp,
     SignIn,
     Notebooks,
-    Notes
+    Notes,
+    Note
 }
 
 @Composable
@@ -82,18 +87,32 @@ fun GetNotedScreen(
         composable(route = GetNotedScreen.Notebooks.name){
             NotebooksPage(
                 uiState = nbUiState,
-                onNotebookClicked = { navController.navigate(GetNotedScreen.Notes.name) },
-                onCreateNotebookClicked = { notebooksViewModel.toggleCreate() },
+                onCreateNotebookClicked = {notebooksViewModel.toggleCreate()},
+                onDeleteNotebookClicked = {notebooksViewModel.toggleDelete()},
+                onCancelNb = { notebooksViewModel.cancelRequest() },
                 onNameChange = {notebooksViewModel.updateName(it)},
-                onDeleteNotebookClicked = { notebooksViewModel.toggleDelete() },
-                notebooks = emptyArray()
+                onNotebookClicked = { navController.navigate(GetNotedScreen.Notes.name) },
+                notebooks = emptyList(),
+                modifier = modifier
             )
         }
 
         composable(route = GetNotedScreen.Notes.name){
             NotesPage(
                 onNoteClicked = {},
-                notes = arrayOf(1,2)
+                notes = arrayOf(1,2),
+                modifier = modifier
+            )
+        }
+
+        composable(route = GetNotedScreen.Note.name) {
+            var noteTextStub by remember { mutableStateOf("") }
+            NotePage(
+                modifier = modifier,
+                text = noteTextStub,
+                onTextChanged = { noteTextStub = it },
+                onBackClicked = { navController.popBackStack() },
+                onSaveClicked = { }
             )
         }
     }

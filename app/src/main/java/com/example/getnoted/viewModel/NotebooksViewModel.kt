@@ -52,6 +52,12 @@ class NotebooksViewModel(): ViewModel(){
 
     }
 
+    fun cancelRequest(){
+        _uiState.update {currentState ->
+            currentState.copy(showCreate = false, showDelete = false)
+        }
+    }
+
     fun getNotebooks(){
         viewModelScope.launch {
             _uiState.update { currentState ->
