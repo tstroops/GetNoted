@@ -83,9 +83,10 @@ fun GetNotedScreen(
             NotebooksPage(
                 uiState = nbUiState,
                 onNotebookClicked = { navController.navigate(GetNotedScreen.Notes.name) },
-                onNewNotebookClicked = { /*TODO*/ },
-                onDeleteNotebookClicked = { /*TODO*/ },
-                notebooks = arrayOf(1,2)
+                onCreateNotebookClicked = { notebooksViewModel.toggleCreate() },
+                onNameChange = {notebooksViewModel.updateName(it)},
+                onDeleteNotebookClicked = { notebooksViewModel.toggleDelete() },
+                notebooks = emptyArray()
             )
         }
 
