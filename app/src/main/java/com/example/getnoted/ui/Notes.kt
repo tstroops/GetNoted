@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,7 +23,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,12 +38,14 @@ fun NotesPage(
     onCreateNoteClicked: () -> Unit,
     onDeleteNoteClicked: () -> Unit,
     onCancelNote: ()-> Unit,
+    onBackClicked: ()-> Unit,
     onNameChange: (String) -> Unit,
     notes: List<Note>,
     modifier: Modifier = Modifier
 ){
 
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
 
     Scaffold(
         modifier = modifier,
@@ -78,7 +80,7 @@ fun NotesPage(
                         .padding(horizontal = 16.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    Button(onClick = { /*TODO*/ }) { // The back button so if back clicked, call navhost
+                    Button(onClick = onBackClicked ) {
                         Text(text = "Back")
                     }
                 }
@@ -89,7 +91,40 @@ fun NotesPage(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .padding(16.dp)
         ) {
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val chunkedNotes = notes.chunked(3)
+                for (row in chunkedNotes) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        for (note in row) {
+                            Button(
+                                onClick = {onNoteClicked()}, // this will navigate to that note page
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(text = note.name)
+                            }
+                        }
+
+                        repeat(3-row.size) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,47 +145,24 @@ fun NotesPage(
                     Text(text = "Delete Note")
                 }
             }
-
-            val chunkedNotes = notes.toList().chunked(3)
-
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                for (row in chunkedNotes) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        for (note in row) {
-                            Button(
-                                onClick = {onNoteClicked()}, // this will navigate to that note page
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text(text = "Notebook $note")
-                            }
-                        }
-                    }
-                }
-            }
-            if(uiState.showCreate){
-                CreateNewNote(
+        }
+        if(uiState.showCreate){
+            CreateNewNote(
+                onDismissRequest = onCancelNote,
+                uiState = NotesUiState(),
+                onNameChange = onNameChange,
+                userIn = uiState.noteName
+            )
+        }
+        if(uiState.showDelete){
+            if (notes.isNotEmpty()) {
+                DeleteNote(
                     onDismissRequest = onCancelNote,
                     uiState = NotesUiState(),
-                    onNameChange = onNameChange,
-                    userIn = uiState.noteName
                 )
             }
-            if(uiState.showDelete){
-                if (notes.isNotEmpty()) {
-                    DeleteNote(
-                        onDismissRequest = onCancelNote,
-                        uiState = NotesUiState(),
-                    )
-                }
-                else{
-                    Toast.makeText(context, "No notes to delete!", Toast.LENGTH_SHORT).show()
-                }
+            else{
+                Toast.makeText(context, "No notes to delete!", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -220,7 +232,9 @@ fun PreviewNotes() {
             onDeleteNoteClicked = {},
             onCancelNote = {},
             onNameChange = {},
+            onBackClicked = {},
             uiState = NotesUiState(),
-            notes = emptyList())
+            notes = listOf(Note(name = "Work", info = "Work", nbId = 1), Note(name = "Home", info = "Home", nbId = 1))
+        )
     }
 }

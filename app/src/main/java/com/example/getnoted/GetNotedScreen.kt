@@ -95,7 +95,7 @@ fun GetNotedScreen(
                 onCancelNb = { notebooksViewModel.cancelRequest() },
                 onNameChange = {notebooksViewModel.updateName(it)},
                 onNotebookClicked = { navController.navigate(GetNotedScreen.Notes.name) },
-                notebooks = emptyList(),
+                notebooks = nbUiState.notebooks,
                 modifier = modifier
             )
         }
@@ -107,6 +107,7 @@ fun GetNotedScreen(
                 onCreateNoteClicked = { notesViewModel.toggleCreate() },
                 onDeleteNoteClicked = { notesViewModel.toggleDelete() },
                 onCancelNote = {notesViewModel.cancelRequest()},
+                onBackClicked = {navController.popBackStack(route = GetNotedScreen.Notebooks.name, inclusive = false)},
                 onNameChange = {notesViewModel.updateName(it)},
                 uiState = notesUiState
             )
@@ -118,7 +119,7 @@ fun GetNotedScreen(
                 modifier = modifier,
                 text = noteTextStub,
                 onTextChanged = { noteTextStub = it },
-                onBackClicked = { navController.popBackStack() },
+                onBackClicked = { navController.popBackStack(route = GetNotedScreen.Notes.name, inclusive = false) },
                 onSaveClicked = { }
             )
         }

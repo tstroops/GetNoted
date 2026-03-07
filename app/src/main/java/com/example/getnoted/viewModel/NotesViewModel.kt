@@ -19,12 +19,14 @@ data class Note(
 )
 
 data class NotesUiState(
-    val notes: List<Note> = emptyList(),
+    val notes: List<Note> = listOf(example),
     val isLoading: Boolean = false,
     val showCreate: Boolean = false,
     val showDelete: Boolean = false,
     val noteName: String = ""
 )
+
+val example = Note("example", "example", 1)
 
 class NotesViewModel(): ViewModel() {
     private val tag = "NotesViewModel"

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,7 +23,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,16 +33,16 @@ import com.example.getnoted.viewModel.NotebooksUiState
 @Composable
 fun NotebooksPage(
     uiState: NotebooksUiState,
-    onNotebookClicked: () -> Unit, // we will use UI state, as that will hold the list of notebooks, just a placeholder for UI testing
+    onNotebookClicked: () -> Unit,
     onCreateNotebookClicked: () -> Unit,
     onDeleteNotebookClicked: () -> Unit,
     onCancelNb: () -> Unit,
     onNameChange: (String) -> Unit,
-    notebooks: List<Notebook>,
+    notebooks: MutableList<Notebook>,
     modifier: Modifier = Modifier
 ) {
-
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
 
     Scaffold(
         modifier = modifier,
@@ -77,65 +77,89 @@ fun NotebooksPage(
                         .padding(horizontal = 16.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    Button(onClick = { /*TODO*/ }) { // will call the sign out function, or we could call the navhost to go back to the sign in page and immediately call the sign out function
+                    Button(onClick = { /* Sign Out logic */ }) {
                         Text(text = "Sign Out")
                     }
                 }
             }
         }
     ) { innerPadding ->
-
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .padding(16.dp)
         ) {
-            Row(
+            // Notebooks Grid Area
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                    .weight(1f)
+                    .verticalScroll(scrollState),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val chunkedNotebooks = notebooks.chunked(3)
+                for (row in chunkedNotebooks) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        for (notebook in row) {
+                            Button(
+                                onClick = { onNotebookClicked() },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(text = notebook.title)
+                            }
+                        }
+                        // Fill empty slots in the row if needed to keep buttons size consistent
+                        repeat(3 - row.size) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
-                    onClick = { onNotebookClicked() }
-                    ) {
-                    Text(text = "Notebook")
-                }
-                Button(
-                    onClick = { onCreateNotebookClicked() }, //Calls the passed in function for viewmodel to create a notebook
+                    onClick = { onCreateNotebookClicked() },
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(text = "Create Notebook")
                 }
 
                 Button(
-                    onClick = { onDeleteNotebookClicked() }, // calls the passed in function for the viewmodel to delete a notebook
+                    onClick = { onDeleteNotebookClicked() },
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(text = "Delete Notebook")
                 }
             }
+        }
 
-    if (uiState.showCreate) {
-        CreateNewNotebook(
-            uiState = NotebooksUiState(),
-            onDismissRequest = onCancelNb,
-            onNameChange = onNameChange,
-            userIn = uiState.notebookName
-        )
-    }
-
-    if(uiState.showDelete){
-        if (notebooks.isNotEmpty()) {
-            DeleteNotebook(
+        if (uiState.showCreate) {
+            CreateNewNotebook(
+                uiState = uiState,
                 onDismissRequest = onCancelNb,
-                uiState = NotebooksUiState(),
+                onNameChange = onNameChange,
+                userIn = uiState.notebookName
             )
         }
-        else {
-            Toast.makeText(context , "No notebooks to delete!", Toast.LENGTH_SHORT).show()
-        }
-    }
+
+        if (uiState.showDelete) {
+            if (notebooks.isNotEmpty()) {
+                DeleteNotebook(
+                    onDismissRequest = onCancelNb,
+                    uiState = uiState,
+                )
+            } else {
+                Toast.makeText(context, "No notebooks to delete!", Toast.LENGTH_SHORT).show()
+                onCancelNb() // Reset the state since we can't show the dialog
+            }
         }
     }
 }
@@ -147,19 +171,18 @@ fun CreateNewNotebook(
     onNameChange: (String) -> Unit,
     userIn: String
 ) {
-
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
             TextButton(
-                onClick = {},
-                enabled = uiState.notebookName.isNotBlank()
+                onClick = { uiState.notebooks.add(Notebook(title = userIn, user = "")) },
+                enabled = userIn.isNotBlank()
             ) {
                 Text(text = "Create")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismissRequest ) {
+            TextButton(onClick = onDismissRequest) {
                 Text(text = "Cancel")
             }
         },
@@ -181,19 +204,21 @@ fun CreateNewNotebook(
 fun DeleteNotebook(
     onDismissRequest: () -> Unit,
     uiState: NotebooksUiState,
-){
+) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
-            TextButton(onClick = {/*TODO*/}) {
+            TextButton(onClick = { /* TODO: Call ViewModel to delete */ }) {
                 Text(text = "Delete")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismissRequest ){
+            TextButton(onClick = onDismissRequest) {
                 Text(text = "Cancel")
             }
-        }
+        },
+        title = { Text(text = "Delete Notebook") },
+        text = { Text(text = "Are you sure you want to delete this notebook?") }
     )
 }
 
@@ -208,6 +233,7 @@ fun PreviewNotebook() {
             onDeleteNotebookClicked = {},
             uiState = NotebooksUiState(),
             onCancelNb = {},
-            notebooks = emptyList())
+            notebooks = mutableListOf(Notebook(title = "Work", user = ""), Notebook(title = "Home", user = ""))
+        )
     }
 }
