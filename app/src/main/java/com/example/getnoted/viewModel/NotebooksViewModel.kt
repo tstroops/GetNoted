@@ -13,16 +13,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Notebook(
-    val id: Int,
-    val createdAt: String,
     val title: String,
     val user: String,
-    val number: Short,
 )
+
+val eggsample = Notebook("example", "example")
 
 data class NotebooksUiState(
     //maxId int
-    val notebooks: List<Notebook> = emptyList(),
+    val notebooks: List<Notebook> = listOf(eggsample),
     val isLoading: Boolean = false,
     val showCreate: Boolean = false,
     val showDelete: Boolean = false,

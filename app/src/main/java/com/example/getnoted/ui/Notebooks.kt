@@ -97,6 +97,11 @@ fun NotebooksPage(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
+                    onClick = { onNotebookClicked() }
+                    ) {
+                    Text(text = "Notebook")
+                }
+                Button(
                     onClick = { onCreateNotebookClicked() }, //Calls the passed in function for viewmodel to create a notebook
                     modifier = Modifier.weight(1f)
                 ) {
