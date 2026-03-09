@@ -32,7 +32,7 @@ import com.example.getnoted.ui.theme.GetNotedTheme
 fun NotePage(
     modifier: Modifier = Modifier,
     onTextChanged: (String) -> Unit,
-    onBackClicked: (String) -> Unit,
+    onBackClicked: () -> Unit,
     onSaveClicked: (String) -> Unit,
     text: String // so the text field knows what to display
     // Ui state/ data class can be added here
@@ -73,10 +73,10 @@ fun NotePage(
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Button(onClick = {/*TODO*/}) { // add the functions passed in for the back button
+                        Button(onClick = {onSaveClicked(text); onBackClicked()}) {
                             Text(text = "Back")
                         }
-                        Button(onClick = {/*TODO*/}) { // add the functions passed in for the save button
+                        Button(onClick = {onSaveClicked(text)}) { // add the functions passed in for the save button
                             Text(text = "Save")
                         }
                     }

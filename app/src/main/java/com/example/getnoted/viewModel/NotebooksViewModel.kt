@@ -13,16 +13,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Notebook(
-    val id: Int,
-    val createdAt: String,
     val title: String,
     val user: String,
-    val number: Short,
 )
+
+
+val test = Notebook("example", "example")
 
 data class NotebooksUiState(
     //maxId int
-    val notebooks: List<Notebook> = emptyList(),
+    val notebooks: MutableList<Notebook> = mutableListOf<Notebook>(test, test),
     val isLoading: Boolean = false,
     val showCreate: Boolean = false,
     val showDelete: Boolean = false,
@@ -61,7 +61,7 @@ class NotebooksViewModel(): ViewModel(){
     fun getNotebooks(){
         viewModelScope.launch {
             _uiState.update { currentState ->
-                currentState.copy(notebooks = listOf(supabase.from("Notebooks").select().decodeAs<Notebook>()))
+                currentState.copy(notebooks = mutableListOf(supabase.from("Notebooks").select().decodeAs<Notebook>()))
             }
 
         }

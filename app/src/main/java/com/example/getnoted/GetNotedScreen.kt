@@ -21,6 +21,7 @@ import com.example.getnoted.ui.WelcomeScreen
 import com.example.getnoted.viewModel.AuthState
 import com.example.getnoted.viewModel.AuthViewModel
 import com.example.getnoted.viewModel.NotebooksViewModel
+import com.example.getnoted.viewModel.NotesViewModel
 
 enum class GetNotedScreen {
     Welcome,
@@ -36,11 +37,13 @@ fun GetNotedScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     authViewModel: AuthViewModel = viewModel(),
-    notebooksViewModel: NotebooksViewModel = viewModel()
+    notebooksViewModel: NotebooksViewModel = viewModel(),
+    notesViewModel: NotesViewModel = viewModel()
 ) {
     // When viewmodel changes are made update UI state
     val uiState by authViewModel.uiState.collectAsState()
     val nbUiState by notebooksViewModel.uiState.collectAsState()
+    val notesUiState by notesViewModel.uiState.collectAsState()
 
     NavHost(
         navController = navController,
@@ -92,7 +95,7 @@ fun GetNotedScreen(
                 onCancelNb = { notebooksViewModel.cancelRequest() },
                 onNameChange = {notebooksViewModel.updateName(it)},
                 onNotebookClicked = { navController.navigate(GetNotedScreen.Notes.name) },
-                notebooks = emptyList(),
+                notebooks = nbUiState.notebooks,
                 modifier = modifier
             )
         }
@@ -100,8 +103,13 @@ fun GetNotedScreen(
         composable(route = GetNotedScreen.Notes.name){
             NotesPage(
                 onNoteClicked = {},
-                notes = arrayOf(1,2),
-                modifier = modifier
+                notes = notesUiState.notes,
+                onCreateNoteClicked = { notesViewModel.toggleCreate() },
+                onDeleteNoteClicked = { notesViewModel.toggleDelete() },
+                onCancelNote = {notesViewModel.cancelRequest()},
+                onBackClicked = {navController.popBackStack(route = GetNotedScreen.Notebooks.name, inclusive = false)},
+                onNameChange = {notesViewModel.updateName(it)},
+                uiState = notesUiState
             )
         }
 
@@ -111,7 +119,7 @@ fun GetNotedScreen(
                 modifier = modifier,
                 text = noteTextStub,
                 onTextChanged = { noteTextStub = it },
-                onBackClicked = { navController.popBackStack() },
+                onBackClicked = { navController.popBackStack(route = GetNotedScreen.Notes.name, inclusive = false) },
                 onSaveClicked = { }
             )
         }
