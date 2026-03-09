@@ -19,7 +19,7 @@ data class Note(
 )
 
 data class NotesUiState(
-    val notes: List<Note> = listOf(example),
+    val notes: MutableList<Note> = mutableListOf(example),
     val isLoading: Boolean = false,
     val showCreate: Boolean = false,
     val showDelete: Boolean = false,
@@ -54,7 +54,7 @@ class NotesViewModel(): ViewModel() {
     fun getNotes(){
         viewModelScope.launch {
             _uiState.update { currentState ->
-                currentState.copy(notes = listOf(supabase.from("Notes").select().decodeAs<Note>()))
+                currentState.copy(notes = mutableListOf(supabase.from("Notes").select().decodeAs<Note>()))
             }
         }
     }

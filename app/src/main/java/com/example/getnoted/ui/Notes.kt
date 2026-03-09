@@ -40,7 +40,7 @@ fun NotesPage(
     onCancelNote: ()-> Unit,
     onBackClicked: ()-> Unit,
     onNameChange: (String) -> Unit,
-    notes: List<Note>,
+    notes: MutableList<Note>,
     modifier: Modifier = Modifier
 ){
 
@@ -234,7 +234,7 @@ fun PreviewNotes() {
             onNameChange = {},
             onBackClicked = {},
             uiState = NotesUiState(),
-            notes = listOf(Note(name = "Work", info = "Work", nbId = 1), Note(name = "Home", info = "Home", nbId = 1))
+            notes = mutableListOf(Note(name = "Work", info = "Work", nbId = 1), Note(name = "Home", info = "Home", nbId = 1))
         )
     }
 }

@@ -103,7 +103,7 @@ fun GetNotedScreen(
         composable(route = GetNotedScreen.Notes.name){
             NotesPage(
                 onNoteClicked = {},
-                notes = emptyList(),
+                notes = notesUiState.notes,
                 onCreateNoteClicked = { notesViewModel.toggleCreate() },
                 onDeleteNoteClicked = { notesViewModel.toggleDelete() },
                 onCancelNote = {notesViewModel.cancelRequest()},
