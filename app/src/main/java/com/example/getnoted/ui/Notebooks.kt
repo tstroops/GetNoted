@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -23,6 +24,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,9 +38,11 @@ fun NotebooksPage(
     onNotebookClicked: () -> Unit,
     onCreateNotebookClicked: () -> Unit,
     onDeleteNotebookClicked: () -> Unit,
+    onCreateConfirm: () -> Unit,
+    onDeleteConfirm: () ->Unit,
     onCancelNb: () -> Unit,
     onNameChange: (String) -> Unit,
-    notebooks: MutableList<Notebook>,
+    notebooks: List<Notebook>,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -127,14 +131,26 @@ fun NotebooksPage(
             ) {
                 Button(
                     onClick = { onCreateNotebookClicked() },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonColors(
+                        containerColor = Color.Blue,
+                        contentColor = Color.White,
+                        disabledContainerColor = Color.Gray,
+                        disabledContentColor = Color.Black
+                    )
                 ) {
                     Text(text = "Create Notebook")
                 }
 
                 Button(
                     onClick = { onDeleteNotebookClicked() },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonColors(
+                        containerColor = Color.Red,
+                        contentColor = Color.White,
+                        disabledContainerColor = Color.Gray,
+                        disabledContentColor = Color.Black
+                    )
                 ) {
                     Text(text = "Delete Notebook")
                 }
@@ -143,9 +159,9 @@ fun NotebooksPage(
 
         if (uiState.showCreate) {
             CreateNewNotebook(
-                uiState = uiState,
                 onDismissRequest = onCancelNb,
                 onNameChange = onNameChange,
+                onCreateConfirm = onCreateConfirm,
                 userIn = uiState.notebookName
             )
         }
@@ -154,7 +170,7 @@ fun NotebooksPage(
             if (notebooks.isNotEmpty()) {
                 DeleteNotebook(
                     onDismissRequest = onCancelNb,
-                    uiState = uiState,
+                    onDeleteConfirm = onDeleteConfirm
                 )
             } else {
                 Toast.makeText(context, "No notebooks to delete!", Toast.LENGTH_SHORT).show()
@@ -167,15 +183,15 @@ fun NotebooksPage(
 @Composable
 fun CreateNewNotebook(
     onDismissRequest: () -> Unit,
-    uiState: NotebooksUiState,
     onNameChange: (String) -> Unit,
+    onCreateConfirm: () -> Unit,
     userIn: String
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
             TextButton(
-                onClick = { uiState.notebooks.add(Notebook(title = userIn, user = "")) },
+                onClick = onCreateConfirm ,
                 enabled = userIn.isNotBlank()
             ) {
                 Text(text = "Create")
@@ -203,12 +219,12 @@ fun CreateNewNotebook(
 @Composable
 fun DeleteNotebook(
     onDismissRequest: () -> Unit,
-    uiState: NotebooksUiState,
+    onDeleteConfirm: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
-            TextButton(onClick = { /* TODO: Call ViewModel to delete */ }) {
+            TextButton(onClick = { onDeleteConfirm() }) {
                 Text(text = "Delete")
             }
         },
@@ -231,9 +247,11 @@ fun PreviewNotebook() {
             onCreateNotebookClicked = {},
             onNameChange = {},
             onDeleteNotebookClicked = {},
+            onCreateConfirm = {},
+            onDeleteConfirm = {},
             uiState = NotebooksUiState(),
             onCancelNb = {},
-            notebooks = mutableListOf(Notebook(title = "Work", user = ""), Notebook(title = "Home", user = ""))
+            notebooks = mutableListOf(Notebook(title = "Work", userId = -1), Notebook(title = "Home", userId = -2))
         )
     }
 }

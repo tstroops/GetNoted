@@ -3,16 +3,26 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.getnoted.data.AuthRepository
+import com.example.getnoted.data.supabase
+import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.Serializable
 
+
+@Serializable
+data class User(
+    val id: Int,
+    val email: String
+)
 
 // Initializes the UI state
 data class AuthUiState(
     val email: String = "",
+    val userId: Int = -1,
     val password: String = "",
     val passwordConfirm: String = "",
     val authState: AuthState = AuthState.Loading,
@@ -39,7 +49,8 @@ class AuthViewModel(): ViewModel() {
     init {
         viewModelScope.launch {
             // If the session returns a token then the user is logged in
-            if (AuthRepository.getCurrentSession() != null)
+            val session = AuthRepository.getCurrentSession()
+            if (session != null)
             {
                 _uiState.update { currentState ->
                     currentState.copy(authState = AuthState.IsAuthorized)
@@ -124,13 +135,22 @@ class AuthViewModel(): ViewModel() {
                 AuthRepository.signIn(email, password)
                 Log.d(TAG, "Sign In Success :)")
 
-                // If successful, update status
+                val user = supabase.from("users").select {
+                    filter {
+                        eq("username", email)
+                    }
+                }.decodeSingle<User>()
+
                 _uiState.update { currentState ->
-                    currentState.copy(authState = AuthState.IsAuthorized)
+                    currentState.copy(
+                        authState = AuthState.IsAuthorized,
+                        userId = user.id,
+                        errorMessage = null
+                    )
                 }
             }
             catch (e: Exception) {
-                Log.d(TAG,"Sign In Failed :(")
+                Log.d(TAG,"Sign In Failed :(", e)
 
                 // If not successful, show error message
                 _uiState.update { currentState ->

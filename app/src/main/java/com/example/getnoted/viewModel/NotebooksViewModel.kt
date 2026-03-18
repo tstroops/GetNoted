@@ -2,8 +2,9 @@ package com.example.getnoted.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.getnoted.data.supabase
-import io.github.jan.supabase.postgrest.from
+import com.example.getnoted.data.NotesRepository.addNotebook
+import com.example.getnoted.data.NotesRepository.getNotebooksByUser
+import com.example.getnoted.data.NotesRepository.deleteNotebook
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,15 +15,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Notebook(
     val title: String,
-    val user: String,
+    val userId: Int,
 )
 
-
-val test = Notebook("example", "example")
-
 data class NotebooksUiState(
-    //maxId int
-    val notebooks: MutableList<Notebook> = mutableListOf<Notebook>(test, test),
+    val notebooks: List<Notebook> = listOf(),
     val isLoading: Boolean = false,
     val showCreate: Boolean = false,
     val showDelete: Boolean = false,
@@ -30,7 +27,9 @@ data class NotebooksUiState(
 )
 
 class NotebooksViewModel(): ViewModel(){
-    private val tag = "NotebooksViewModel"
+
+    private val authState = AuthUiState()
+
     private val _uiState = MutableStateFlow(NotebooksUiState())
     val uiState: StateFlow<NotebooksUiState> = _uiState.asStateFlow()
 
@@ -61,9 +60,26 @@ class NotebooksViewModel(): ViewModel(){
     fun getNotebooks(){
         viewModelScope.launch {
             _uiState.update { currentState ->
-                currentState.copy(notebooks = mutableListOf(supabase.from("Notebooks").select().decodeAs<Notebook>()))
+                currentState.copy(notebooks = getNotebooksByUser(authState.userId))
             }
 
+        }
+    }
+
+    fun createNotebook(){
+        viewModelScope.launch {
+            addNotebook(
+                Notebook(
+                    title = _uiState.value.notebookName,
+                    userId = authState.userId
+                )
+            )
+        }
+    }
+
+    fun deleteNotebook(){
+        viewModelScope.launch {
+            deleteNotebook(notebookId = -1)
         }
     }
 

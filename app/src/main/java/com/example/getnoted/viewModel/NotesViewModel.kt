@@ -2,13 +2,14 @@ package com.example.getnoted.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.getnoted.data.supabase
-import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.example.getnoted.data.NotesRepository.addNote
+import com.example.getnoted.data.NotesRepository.deleteNote
+import com.example.getnoted.data.NotesRepository.getNotesByNotebook
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -19,7 +20,7 @@ data class Note(
 )
 
 data class NotesUiState(
-    val notes: MutableList<Note> = mutableListOf(example),
+    val notes: List<Note> = listOf(example),
     val isLoading: Boolean = false,
     val showCreate: Boolean = false,
     val showDelete: Boolean = false,
@@ -29,7 +30,6 @@ data class NotesUiState(
 val example = Note("example", "example", 1)
 
 class NotesViewModel(): ViewModel() {
-    private val tag = "NotesViewModel"
     private val _uiState = MutableStateFlow(NotesUiState())
     val uiState: StateFlow<NotesUiState> = _uiState.asStateFlow()
 
@@ -54,7 +54,7 @@ class NotesViewModel(): ViewModel() {
     fun getNotes(){
         viewModelScope.launch {
             _uiState.update { currentState ->
-                currentState.copy(notes = mutableListOf(supabase.from("Notes").select().decodeAs<Note>()))
+                currentState.copy(notes = getNotesByNotebook(1))
             }
         }
     }
@@ -64,4 +64,21 @@ class NotesViewModel(): ViewModel() {
             currentState.copy(noteName = name)
         }
     }
+
+    fun createNote(){
+        viewModelScope.launch {
+            addNote(Note(
+                name = _uiState.value.noteName,
+                info = "example",
+                nbId = 1
+            ))
+        }
+    }
+
+    fun deleteNote(){
+        viewModelScope.launch {
+            deleteNote(noteId = -1)
+        }
+    }
+
 }
