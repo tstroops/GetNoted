@@ -16,6 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.getnoted.ui.theme.Black
@@ -53,7 +57,13 @@ fun SignInPage(
             UserSignIn(
                 label = "Password",
                 userIn = uiState.password,
-                onValueChange = onPasswordChange
+                onValueChange = onPasswordChange,
+                visualTransformation = VisualTransformation { text ->
+                    TransformedText(
+                        AnnotatedString("*".repeat(text.text.length)),
+                        OffsetMapping.Identity
+                    )
+                }
             )
 
             Button(onClick = onSignInClicked) {
@@ -68,7 +78,8 @@ fun UserSignIn(
     label: String,
     userIn: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     Text(text = label)
     TextField(
@@ -76,6 +87,7 @@ fun UserSignIn(
         onValueChange = onValueChange,
         label = { Text(label) },
         modifier = modifier,
+        visualTransformation = visualTransformation,
         colors = TextFieldDefaults.colors(
             focusedTextColor = Black,
             unfocusedTextColor = Black,

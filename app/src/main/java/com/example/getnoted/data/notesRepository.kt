@@ -15,7 +15,7 @@ object NotesRepository {
         }.decodeList<Notebook>()
     }
 
-    suspend fun getNotesbyNotebook(notebookId: Int): List<Note> {
+    suspend fun getNotesByNotebook(notebookId: Int): List<Note> {
 
         return supabase.from("Notes").select {
             filter {
@@ -35,26 +35,26 @@ object NotesRepository {
     }
 
 
-    suspend fun updateNote(columnToChange: String, newValue: String, NoteId: Int) {
+    suspend fun updateNote(columnToChange: String, newValue: String, noteId: Int) {
         supabase.from("Notes").update(
             {
                 set(columnToChange, newValue)
             }
         ) {
             filter {
-                eq("id", NoteId)
+                eq("id", noteId)
             }
         }.decodeSingleOrNull<Note>()
     }
 
-    suspend fun updateNoteBook(columnToChange: String, newValue: String, NoteId: Int) {
+    suspend fun updateNotebook(columnToChange: String, newValue: String, noteId: Int) {
         supabase.from("Notes").update(
             {
                 set(columnToChange, newValue)
             }
         ) {
             filter {
-                eq("id", NoteId)
+                eq("id", noteId)
             }
         }.decodeSingleOrNull<Notebook>()
     }
@@ -63,6 +63,11 @@ object NotesRepository {
         supabase.from("Notebooks").delete {
             filter {
                 eq("id", notebookId)
+            }
+        }
+        supabase.from("Notes").delete {
+            filter {
+                eq("notebook_id", notebookId)
             }
         }
     }

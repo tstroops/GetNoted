@@ -88,12 +88,15 @@ fun GetNotedScreen(
         }
 
         composable(route = GetNotedScreen.Notebooks.name){
+            notebooksViewModel.getNotebooks()
             NotebooksPage(
                 uiState = nbUiState,
                 onCreateNotebookClicked = {notebooksViewModel.toggleCreate()},
                 onDeleteNotebookClicked = {notebooksViewModel.toggleDelete()},
                 onCancelNb = { notebooksViewModel.cancelRequest() },
                 onNameChange = {notebooksViewModel.updateName(it)},
+                onCreateConfirm = { notebooksViewModel.createNotebook() },
+                onDeleteConfirm = { notebooksViewModel.deleteNotebook() },
                 onNotebookClicked = { navController.navigate(GetNotedScreen.Notes.name) },
                 notebooks = nbUiState.notebooks,
                 modifier = modifier
@@ -101,14 +104,17 @@ fun GetNotedScreen(
         }
 
         composable(route = GetNotedScreen.Notes.name){
+            notesViewModel.getNotes()
             NotesPage(
                 onNoteClicked = {},
                 notes = notesUiState.notes,
                 onCreateNoteClicked = { notesViewModel.toggleCreate() },
                 onDeleteNoteClicked = { notesViewModel.toggleDelete() },
-                onCancelNote = {notesViewModel.cancelRequest()},
-                onBackClicked = {navController.popBackStack(route = GetNotedScreen.Notebooks.name, inclusive = false)},
-                onNameChange = {notesViewModel.updateName(it)},
+                onConfirmCreate = { notesViewModel.createNote() },
+                onConfirmDelete = { notesViewModel.deleteNote()},
+                onCancelNote =  { notesViewModel.cancelRequest() },
+                onBackClicked = { navController.popBackStack(route = GetNotedScreen.Notebooks.name, inclusive = false) },
+                onNameChange = { notesViewModel.updateName(it) },
                 uiState = notesUiState
             )
         }
