@@ -26,11 +26,11 @@ object NotesRepository {
         }
         return 1
     }
-    suspend fun getNotebooksByUser(userId: Int): List<Notebook> {
+    suspend fun getNotebooksByUser(email: String): List<Notebook> {
 
         return supabase.from("Notebooks").select {
             filter {
-                eq(column = "user", value = userId)
+                eq(column = "user", value = email)
             }
         }.decodeList<Notebook>()
     }

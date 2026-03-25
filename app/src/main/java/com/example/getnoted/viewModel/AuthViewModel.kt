@@ -3,26 +3,15 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.getnoted.data.AuthRepository
-import com.example.getnoted.data.supabase
-import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.serialization.Serializable
-
-
-@Serializable
-data class User(
-    val id: Int,
-    val email: String
-)
 
 // Initializes the UI state
 data class AuthUiState(
     val email: String = "",
-    val userId: Int = -1,
     val password: String = "",
     val passwordConfirm: String = "",
     val authState: AuthState = AuthState.Loading,
@@ -37,8 +26,8 @@ enum class AuthState {
     Loading // Fetching Session Status
 }
 
-class AuthViewModel(): ViewModel() {
-    private val TAG = "AuthViewModel"
+class AuthViewModel: ViewModel() {
+    private val tag = "AuthViewModel"
 
     // Expose UI state
     // The private editable uiState only changeable by viewmodel
@@ -59,7 +48,7 @@ class AuthViewModel(): ViewModel() {
             }
             else
             {
-                // If the session is doesn't return a token then the user is not logged in
+                // If the session doesn't return a token then the user is not logged in
                 _uiState.update { currentState ->
                     currentState.copy(authState = AuthState.NotAuthorized)
                 }
@@ -117,7 +106,7 @@ class AuthViewModel(): ViewModel() {
             } catch (e: Exception) {
                 // If the signup wasn't successful
                 _uiState.update { currentState ->
-                    currentState.copy(errorMessage = "Sign Up Failed")
+                    currentState.copy(errorMessage = "Sign Up Failed $e")
                 }
             }
         }
@@ -128,33 +117,29 @@ class AuthViewModel(): ViewModel() {
         // Grab current UI fields
         val email = _uiState.value.email
         val password = _uiState.value.password
-        Log.d(TAG, "Signing in with email")
+        Log.d(tag, "Signing in with email")
 
         viewModelScope.launch {
             try {
                 AuthRepository.signIn(email, password)
-                Log.d(TAG, "Sign In Success :)")
+                Log.d(tag, "Sign In Success :)")
 
-                val user = supabase.from("notebooks").select {
-                    filter {
-                        eq("user", email)
-                    }
-                }.decodeSingle<User>()
+
 
                 _uiState.update { currentState ->
                     currentState.copy(
                         authState = AuthState.IsAuthorized,
-                        userId = user.id,
-                        errorMessage = null
+                        errorMessage = null,
+                        email = email
                     )
                 }
             }
             catch (e: Exception) {
-                Log.d(TAG,"Sign In Failed :(", e)
+                Log.d(tag,"Sign In Failed :(", e)
 
                 // If not successful, show error message
                 _uiState.update { currentState ->
-                    currentState.copy(errorMessage = "Sign in Failed")
+                    currentState.copy(errorMessage = "Sign in Failed: ${e.message}")
                 }
             }
         }

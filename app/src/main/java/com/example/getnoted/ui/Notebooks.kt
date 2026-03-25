@@ -251,7 +251,7 @@ fun PreviewNotebook() {
             onDeleteConfirm = {},
             uiState = NotebooksUiState(),
             onCancelNb = {},
-            notebooks = mutableListOf(Notebook(title = "Work", userId = -1, id = 0), Notebook(title = "Home", userId = -2, id = 1))
+            notebooks = mutableListOf(Notebook(title = "Work", userId = "", id = 0), Notebook(title = "Home", userId = "", id = 1))
         )
     }
 }

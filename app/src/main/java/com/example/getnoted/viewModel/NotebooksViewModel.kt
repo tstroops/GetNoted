@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Notebook(
     val title: String,
-    val userId: Int,
+    val userId: String,
     val id: Long
 )
 
@@ -27,7 +27,7 @@ data class NotebooksUiState(
     val notebookName: String = ""
 )
 
-class NotebooksViewModel(): ViewModel(){
+class NotebooksViewModel: ViewModel(){
 
     private val authState = AuthUiState()
 
@@ -61,7 +61,7 @@ class NotebooksViewModel(): ViewModel(){
     fun getNotebooks(){
         viewModelScope.launch {
             _uiState.update { currentState ->
-                currentState.copy(notebooks = getNotebooksByUser(authState.userId))
+                currentState.copy(notebooks = getNotebooksByUser(authState.email))
             }
 
         }
@@ -72,7 +72,7 @@ class NotebooksViewModel(): ViewModel(){
             addNotebook(
                 Notebook(
                     title = _uiState.value.notebookName,
-                    userId = authState.userId,
+                    userId = authState.email,
                     id = createNotebookID()
                 )
             )
