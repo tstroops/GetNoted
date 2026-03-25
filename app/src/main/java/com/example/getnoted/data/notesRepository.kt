@@ -3,9 +3,29 @@ package com.example.getnoted.data
 import com.example.getnoted.viewModel.Notebook
 import com.example.getnoted.viewModel.Note
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Count
 
 object NotesRepository {
 
+    suspend fun createNotebookID(): Long{
+        val numRows = supabase.from("notebooks").select{
+            count(Count.EXACT)
+        }.countOrNull()
+        if (numRows != null) {
+            return numRows + 1
+        }
+        return 1
+    }
+
+    suspend fun createNoteID(): Long{
+        val numRows = supabase.from("notes").select{
+            count(Count.EXACT)
+        }.countOrNull()
+        if (numRows != null) {
+            return numRows + 1
+        }
+        return 1
+    }
     suspend fun getNotebooksByUser(userId: Int): List<Notebook> {
 
         return supabase.from("Notebooks").select {
@@ -15,7 +35,7 @@ object NotesRepository {
         }.decodeList<Notebook>()
     }
 
-    suspend fun getNotesByNotebook(notebookId: Int): List<Note> {
+    suspend fun getNotesByNotebook(notebookId: Long): List<Note> {
 
         return supabase.from("Notes").select {
             filter {

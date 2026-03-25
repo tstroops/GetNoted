@@ -97,7 +97,7 @@ fun GetNotedScreen(
                 onNameChange = {notebooksViewModel.updateName(it)},
                 onCreateConfirm = { notebooksViewModel.createNotebook() },
                 onDeleteConfirm = { notebooksViewModel.deleteNotebook() },
-                onNotebookClicked = { navController.navigate(GetNotedScreen.Notes.name) },
+                onNotebookClicked = { navController.navigate(GetNotedScreen.Notes.name); notebooksViewModel.getNbId(0) },
                 notebooks = nbUiState.notebooks,
                 modifier = modifier
             )

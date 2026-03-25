@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import com.example.getnoted.data.NotesRepository.addNote
 import com.example.getnoted.data.NotesRepository.deleteNote
 import com.example.getnoted.data.NotesRepository.getNotesByNotebook
+import com.example.getnoted.data.NotesRepository.createNoteID
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,21 +18,20 @@ data class Note(
     val name: String,
     val info: String,
     val nbId: Long,
+    val id: Long
 )
 
 data class NotesUiState(
-    val notes: List<Note> = listOf(example),
-    val isLoading: Boolean = false,
+    val notes: List<Note> = listOf(),
     val showCreate: Boolean = false,
     val showDelete: Boolean = false,
-    val noteName: String = ""
+    val noteName: String = "",
 )
-
-val example = Note("example", "example", 1)
 
 class NotesViewModel(): ViewModel() {
     private val _uiState = MutableStateFlow(NotesUiState())
     val uiState: StateFlow<NotesUiState> = _uiState.asStateFlow()
+    private val nbState = NotebooksUiState()
 
     fun toggleCreate(){
         _uiState.update { currentState ->
@@ -54,7 +54,7 @@ class NotesViewModel(): ViewModel() {
     fun getNotes(){
         viewModelScope.launch {
             _uiState.update { currentState ->
-                currentState.copy(notes = getNotesByNotebook(1))
+                currentState.copy(notes = getNotesByNotebook(-1))
             }
         }
     }
@@ -70,7 +70,8 @@ class NotesViewModel(): ViewModel() {
             addNote(Note(
                 name = _uiState.value.noteName,
                 info = "example",
-                nbId = 1
+                nbId = 1,
+                id = createNoteID()
             ))
         }
     }

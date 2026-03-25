@@ -135,9 +135,9 @@ class AuthViewModel(): ViewModel() {
                 AuthRepository.signIn(email, password)
                 Log.d(TAG, "Sign In Success :)")
 
-                val user = supabase.from("users").select {
+                val user = supabase.from("notebooks").select {
                     filter {
-                        eq("username", email)
+                        eq("user", email)
                     }
                 }.decodeSingle<User>()
 

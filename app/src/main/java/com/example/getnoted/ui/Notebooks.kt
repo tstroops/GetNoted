@@ -110,7 +110,7 @@ fun NotebooksPage(
                         for (notebook in row) {
                             Button(
                                 onClick = { onNotebookClicked() },
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
                             ) {
                                 Text(text = notebook.title)
                             }
@@ -251,7 +251,7 @@ fun PreviewNotebook() {
             onDeleteConfirm = {},
             uiState = NotebooksUiState(),
             onCancelNb = {},
-            notebooks = mutableListOf(Notebook(title = "Work", userId = -1), Notebook(title = "Home", userId = -2))
+            notebooks = mutableListOf(Notebook(title = "Work", userId = -1, id = 0), Notebook(title = "Home", userId = -2, id = 1))
         )
     }
 }

@@ -254,7 +254,7 @@ fun PreviewNotes() {
             onConfirmCreate = {},
             onConfirmDelete = {},
             uiState = NotesUiState(),
-            notes = mutableListOf(Note(name = "Work", info = "Work", nbId = 1), Note(name = "Home", info = "Home", nbId = 1))
+            notes = mutableListOf(Note(name = "Work", info = "Work", nbId = 1, id = 0), Note(name = "Home", info = "Home", nbId = 1, id = 1))
         )
     }
 }

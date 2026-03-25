@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.getnoted.data.NotesRepository.addNotebook
 import com.example.getnoted.data.NotesRepository.getNotebooksByUser
 import com.example.getnoted.data.NotesRepository.deleteNotebook
+import com.example.getnoted.data.NotesRepository.createNotebookID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,11 +17,11 @@ import kotlinx.serialization.Serializable
 data class Notebook(
     val title: String,
     val userId: Int,
+    val id: Long
 )
 
 data class NotebooksUiState(
     val notebooks: List<Notebook> = listOf(),
-    val isLoading: Boolean = false,
     val showCreate: Boolean = false,
     val showDelete: Boolean = false,
     val notebookName: String = ""
@@ -71,7 +72,8 @@ class NotebooksViewModel(): ViewModel(){
             addNotebook(
                 Notebook(
                     title = _uiState.value.notebookName,
-                    userId = authState.userId
+                    userId = authState.userId,
+                    id = createNotebookID()
                 )
             )
         }
@@ -81,6 +83,10 @@ class NotebooksViewModel(): ViewModel(){
         viewModelScope.launch {
             deleteNotebook(notebookId = -1)
         }
+    }
+
+    fun getNbId(index: Int): Long{
+        return _uiState.value.notebooks[index].id
     }
 
 }
