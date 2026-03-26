@@ -4,7 +4,6 @@ import com.example.getnoted.viewModel.Notebook
 import com.example.getnoted.viewModel.Note
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.Count
 
 object NotesRepository {
 
@@ -50,18 +49,6 @@ object NotesRepository {
 
     suspend fun updateNote(columnToChange: String, newValue: String, noteId: Int) {
         supabase.from("notes").update(
-            {
-                set(columnToChange, newValue)
-            }
-        ) {
-            filter {
-                eq("id", noteId)
-            }
-        }
-    }
-
-    suspend fun updateNotebook(columnToChange: String, newValue: String, noteId: Int) {
-        supabase.from("notebooks").update(
             {
                 set(columnToChange, newValue)
             }

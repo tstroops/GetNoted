@@ -21,7 +21,7 @@ object AuthRepository {
         }
     }
 
-    suspend fun getCurrentSession(): UserSession?
+    fun getCurrentSession(): UserSession?
     {
         val session = supabase.auth.currentSessionOrNull()
         return session

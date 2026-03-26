@@ -1,6 +1,5 @@
 package com.example.getnoted.viewModel
 
-import android.R.attr.tag
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,7 +34,7 @@ data class NotesUiState(
     val currentNoteText: String = ""
 )
 
-class NotesViewModel(): ViewModel() {
+class NotesViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(NotesUiState())
     val uiState: StateFlow<NotesUiState> = _uiState.asStateFlow()
 

@@ -69,7 +69,7 @@ class NotebooksViewModel: ViewModel(){
 
     fun createNotebook(){
         viewModelScope.launch {
-            addNotebook(_uiState.value.notebookName,)
+            addNotebook(_uiState.value.notebookName)
             getNotebooks()
             cancelRequest()
         }
@@ -86,10 +86,6 @@ class NotebooksViewModel: ViewModel(){
 
     fun selectNotebook(notebook: Notebook) {
         _uiState.update { it.copy(selectedNotebook = notebook) }
-    }
-
-    fun getNbId(index: Int): Long{
-        return _uiState.value.notebooks[index].id
     }
 
 }

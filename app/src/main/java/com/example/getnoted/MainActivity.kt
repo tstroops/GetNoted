@@ -13,16 +13,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import com.example.getnoted.data.AuthRepository
 import com.example.getnoted.data.initSupabase
-import com.example.getnoted.data.supabase
 import com.example.getnoted.ui.theme.GetNotedTheme
-import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        initSupabase(applicationContext)
+        initSupabase()
 
         lifecycleScope.launch {
             AuthRepository.restoreSession()
