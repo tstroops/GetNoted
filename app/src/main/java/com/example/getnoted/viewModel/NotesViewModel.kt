@@ -16,6 +16,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+//used to decode information from supabase
 data class Note(
     val id: Long = 0,
     @SerialName("note_name") val name: String = "",
@@ -24,6 +25,7 @@ data class Note(
     @SerialName("created_at") val createdAt: String = ""
 )
 
+//values used to handle the Notes page
 data class NotesUiState(
     val notes: List<Note> = listOf(),
     val showCreate: Boolean = false,
@@ -35,15 +37,19 @@ data class NotesUiState(
 )
 
 class NotesViewModel: ViewModel() {
+
+    //makes data class unwritable to outside classes
     private val _uiState = MutableStateFlow(NotesUiState())
     val uiState: StateFlow<NotesUiState> = _uiState.asStateFlow()
 
     private val tag = "NotesViewModel"
 
+    //sets notebook ID for notes
     fun setNotebookId(id: Long) {
         _uiState.update { it.copy(currentNotebookId = id) }
     }
 
+    //selects the note for deletion
     fun selectNote(note: Note) {
         _uiState.update { it.copy(
             selectedNote = note,
@@ -51,18 +57,22 @@ class NotesViewModel: ViewModel() {
         )}
     }
 
+    //handles the dialog for note creation
     fun toggleCreate(){
         _uiState.update { it.copy(showCreate = !it.showCreate) }
     }
 
+    //handles the dialog for note deletion
     fun toggleDelete(){
         _uiState.update { it.copy(showDelete = !it.showDelete) }
     }
 
+    //cancels all dialogs
     fun cancelRequest(){
         _uiState.update { it.copy(showCreate = false, showDelete = false) }
     }
 
+    //gets the notes from supabase
     fun getNotes(){
         viewModelScope.launch {
             val nbId = _uiState.value.currentNotebookId
@@ -70,14 +80,18 @@ class NotesViewModel: ViewModel() {
         }
     }
 
+
+    //handles note name updates/creations
     fun updateName(name: String){
         _uiState.update { it.copy(noteName = name) }
     }
 
+    //handles note text updates
     fun updateNoteText(text: String) {
         _uiState.update { it.copy(currentNoteText = text) }
     }
 
+    //creates a new note to send to supabase
     fun createNote() {
         viewModelScope.launch {
             val nbId = _uiState.value.currentNotebookId
@@ -87,6 +101,7 @@ class NotesViewModel: ViewModel() {
         }
     }
 
+    //deletes a note from supabase
     fun deleteNote(){
         viewModelScope.launch {
             val noteId = _uiState.value.selectedNote?.id ?: return@launch
@@ -96,6 +111,7 @@ class NotesViewModel: ViewModel() {
         }
     }
 
+    //saves the note text to supabase
     fun saveNote() {
         viewModelScope.launch {
             val noteId = _uiState.value.selectedNote?.id ?: return@launch

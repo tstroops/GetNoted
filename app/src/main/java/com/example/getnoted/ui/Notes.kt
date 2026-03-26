@@ -37,14 +37,14 @@ import kotlin.collections.chunked
 fun NotesPage(
     uiState: NotesUiState,
     onNoteClicked: (Note)-> Unit,
-    onCreateNoteClicked: () -> Unit,
-    onDeleteNoteClicked: () -> Unit,
-    onConfirmCreate: () -> Unit,
-    onConfirmDelete: () -> Unit,
-    onCancelNote: ()-> Unit,
-    onBackClicked: ()-> Unit,
-    onNameChange: (String) -> Unit,
-    notes: List<Note>,
+    onCreateNoteClicked: () -> Unit, //used for displaying the create dialog
+    onDeleteNoteClicked: () -> Unit, //used for displaying the delete dialog
+    onConfirmCreate: () -> Unit, //creates the note
+    onConfirmDelete: () -> Unit, //deletes the note
+    onCancelNote: ()-> Unit, //cancels the dialog
+    onBackClicked: ()-> Unit, //returns to the notebooks screen
+    onNameChange: (String) -> Unit, //for the text field in the dialog
+    notes: List<Note>, //for displaying the notes obtained from supabase
     modifier: Modifier = Modifier
 ){
 
@@ -65,7 +65,7 @@ fun NotesPage(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Your Notes", // Maybe we insert the UI state name for the notebook, like "Notebook title" Notes
+                        text = "Your Notes",
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
@@ -84,6 +84,7 @@ fun NotesPage(
                         .padding(horizontal = 16.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
+                    //Back button
                     Button(onClick = onBackClicked ) {
                         Text(text = "Back")
                     }
@@ -97,14 +98,14 @@ fun NotesPage(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-
+            // Notes Grid Area
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val chunkedNotes = notes.chunked(3)
+                val chunkedNotes = notes.chunked(3) //sets the number of notes per row
                 for (row in chunkedNotes) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -119,7 +120,7 @@ fun NotesPage(
                             }
                         }
 
-                        repeat(3-row.size) {
+                        repeat(3-row.size) { // Fill empty slots in the row if needed to keep buttons size consistent
                             Spacer(modifier = Modifier.weight(1f))
                         }
                     }
@@ -135,8 +136,9 @@ fun NotesPage(
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                //launches the create dialog
                 Button(
-                    onClick = onCreateNoteClicked, // call function that's passed in that calls to create note object, then add it to list of notes
+                    onClick = onCreateNoteClicked,
                     modifier = Modifier.weight(1f),
                     colors = ButtonColors(
                         containerColor = Color.Blue,
@@ -148,8 +150,9 @@ fun NotesPage(
                     Text(text = "Create Note")
                 }
 
+                //launches the delete dialog
                 Button(
-                    onClick =  onDeleteNoteClicked, // Same thing call pass in function that calls viewmodel for delete notebook
+                    onClick =  onDeleteNoteClicked,
                     modifier = Modifier.weight(1f),
                     colors = ButtonColors(
                         containerColor = Color.Red,
@@ -162,6 +165,8 @@ fun NotesPage(
                 }
             }
         }
+
+        //handles the create dialog display
         if(uiState.showCreate){
             CreateNewNote(
                 onDismissRequest = onCancelNote,
@@ -171,6 +176,8 @@ fun NotesPage(
                 onConfirmCreate = onConfirmCreate
             )
         }
+
+        //handles the delete dialog display
         if(uiState.showDelete){
             if (notes.isNotEmpty()) {
                 DeleteNote(
@@ -179,6 +186,7 @@ fun NotesPage(
                 )
             }
             else{
+                //case for empty list of notes
                 Toast.makeText(context, "No notes to delete!", Toast.LENGTH_SHORT).show()
             }
         }
@@ -193,6 +201,14 @@ fun CreateNewNote(
     userIn: String,
     onConfirmCreate: () -> Unit,
 ){
+    /**
+     * @param onDismissRequest dismisses the dialog
+     * @param onNameChange changes the name of the note
+     * @param onConfirmCreate creates the note
+     * @param userIn the name of the note
+     * creates a note with the title the user entered
+     * the user must enter a title name to create a note
+     */
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
@@ -225,6 +241,11 @@ fun DeleteNote(
     onDismissRequest: () -> Unit,
     onConfirmDelete: () -> Unit,
 ){
+    /**
+     * @param onDismissRequest dismisses the dialog
+     * @param onConfirmDelete deletes the note
+     * deletes the note the user last clicked
+     */
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {

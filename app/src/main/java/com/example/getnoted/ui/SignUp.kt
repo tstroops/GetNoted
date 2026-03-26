@@ -28,17 +28,18 @@ import com.example.getnoted.viewModel.AuthUiState
 @Composable
 fun SignUpPage(
     uiState: AuthUiState,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onPasswordConfirmChange: (String) -> Unit,
-    onBackClicked: () -> Unit,
-    onSignUpClicked: () -> Unit,
+    onEmailChange: (String) -> Unit, //specifically for the user updates to email
+    onPasswordChange: (String) -> Unit, //specifically for the user updates to the password
+    onPasswordConfirmChange: (String) -> Unit, //specifically for the user updates to the password confirmation
+    onBackClicked: () -> Unit, //returns to the welcome screen
+    onSignUpClicked: () -> Unit, //calls the signup
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
     // Wrap everything in a Box so the Button can sit on top of the centered Column
     Box(modifier = modifier.fillMaxSize()) {
+        //Back button
         Button(
             modifier = Modifier.padding(top = 25.dp, start = 10.dp),
             onClick = onBackClicked
@@ -46,26 +47,34 @@ fun SignUpPage(
             Text(text = "<")
         }
 
+        //the main signup field
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            //handles the email
             UserSignUp(
                 label = "Email",
                 userIn = uiState.email,
                 onValueChange = onEmailChange
             )
+
+            //handles the password
             UserSignUp(
                 label = "Password",
                 userIn = uiState.password,
                 onValueChange = onPasswordChange
             )
+
+            //handles password confirmation
             UserSignUp(
                 label = "Confirm Password",
                 userIn = uiState.passwordConfirm,
                 onValueChange = onPasswordConfirmChange
             )
+
+            //calls the signup
             Button(onClick = {
                 if (uiState.password.length < 8) {
                     Toast.makeText(context, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show()
@@ -88,6 +97,12 @@ fun UserSignUp(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    /**
+     * @param label determines the expected entry for the field
+     * @param userIn the user entered information
+     * @param onValueChange function that handles the user updates to the text field
+     * creates a text field for the user to enter the expected information
+     */
     Text(text = label)
     TextField(
         value = userIn,
@@ -103,6 +118,7 @@ fun UserSignUp(
             unfocusedIndicatorColor = MaterialTheme.colorScheme.primary
         )
     )
+    //spacer added to look nice
     Spacer(modifier = Modifier.height(16.dp))
 }
 

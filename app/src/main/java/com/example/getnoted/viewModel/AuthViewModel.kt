@@ -146,6 +146,9 @@ class AuthViewModel: ViewModel() {
     }
 
     fun signOut() {
+        /**
+         * sets Auth Stat to unauthorized so the user must log in again
+         */
         viewModelScope.launch {
             try {
                 AuthRepository.signOut()

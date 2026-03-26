@@ -1,6 +1,5 @@
 package com.example.getnoted.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -31,7 +30,6 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun GetNotedTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     // We set this to false so your BLUE theme is always used instead of the phone's wallpaper colors
     content: @Composable () -> Unit

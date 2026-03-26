@@ -35,7 +35,6 @@ fun NotePage(
     onBackClicked: () -> Unit,
     onSaveClicked: () -> Unit,
     text: String // so the text field knows what to display
-    // Ui state/ data class can be added here
 ) {
     Scaffold(
         modifier = modifier,
@@ -50,6 +49,7 @@ fun NotePage(
                         .height(64.dp),
                     contentAlignment = Alignment.Center
                 ) {
+                    //lets the user know they're in the notes screen
                     Text(
                         text = "Note", // We could insert the UI state here to display the name of the note at the top bar
                         style = MaterialTheme.typography.titleLarge,
@@ -73,9 +73,11 @@ fun NotePage(
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+                        //back button
                         Button(onClick = {onSaveClicked(); onBackClicked()}) {
                             Text(text = "Back")
                         }
+                        //save button
                         Button(onClick = {onSaveClicked()}) {
                             Text(text = "Save")
                         }
@@ -93,7 +95,7 @@ fun NotePage(
                 value = text, // This will be the UI state for the text
                 onValueChange = { onTextChanged(it) }, // Add the function for when the text is changed
                 modifier = Modifier.fillMaxSize(),
-                placeholder = { Text("Type Here") },
+                placeholder = { Text("Type Here") }, //highlights the text field
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = Black,
                     unfocusedTextColor = Black,

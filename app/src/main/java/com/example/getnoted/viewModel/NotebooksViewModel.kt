@@ -14,6 +14,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+//used to decode information from supabase
 data class Notebook(
     val id: Long = 0,
     @SerialName("Title") val title: String = "",
@@ -21,6 +22,7 @@ data class Notebook(
     @SerialName("created_at") val createdAt: String = ""
 )
 
+//values used to handle the Notebooks page
 data class NotebooksUiState(
     val notebooks: List<Notebook> = listOf(),
     val showCreate: Boolean = false,
@@ -31,20 +33,25 @@ data class NotebooksUiState(
 
 class NotebooksViewModel: ViewModel(){
 
+    //makes data class unwritable to outside classes
     private val _uiState = MutableStateFlow(NotebooksUiState())
     val uiState: StateFlow<NotebooksUiState> = _uiState.asStateFlow()
 
+    //creates/updates the names of notebooks
     fun updateName(name: String){
         _uiState.update { currentState ->
             currentState.copy(notebookName = name)
         }
     }
 
+    //handles the dialog for notebook creation
     fun toggleCreate(){
         _uiState.update { currentState ->
             currentState.copy(showCreate = !currentState.showCreate)
         }
     }
+
+    //handles the dialog for notebook deletion
     fun toggleDelete(){
         _uiState.update {currentState ->
             currentState.copy(showDelete = !currentState.showDelete)
@@ -52,12 +59,14 @@ class NotebooksViewModel: ViewModel(){
 
     }
 
+    //cancels all dialogs
     fun cancelRequest(){
         _uiState.update {currentState ->
             currentState.copy(showCreate = false, showDelete = false)
         }
     }
 
+    //gets the notebooks from supabase
     fun getNotebooks(){
         viewModelScope.launch {
             _uiState.update { currentState ->
@@ -67,6 +76,7 @@ class NotebooksViewModel: ViewModel(){
         }
     }
 
+    //creates a new notebook to send to supabase
     fun createNotebook(){
         viewModelScope.launch {
             addNotebook(_uiState.value.notebookName)
@@ -75,6 +85,7 @@ class NotebooksViewModel: ViewModel(){
         }
     }
 
+    //deletes a notebook from supabase
     fun deleteNotebook(){
         viewModelScope.launch {
             val notebookId = _uiState.value.selectedNotebook?.id ?: return@launch
@@ -84,6 +95,7 @@ class NotebooksViewModel: ViewModel(){
         }
     }
 
+    //selects the notebook for deletion
     fun selectNotebook(notebook: Notebook) {
         _uiState.update { it.copy(selectedNotebook = notebook) }
     }

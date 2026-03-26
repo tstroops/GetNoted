@@ -28,14 +28,15 @@ import com.example.getnoted.viewModel.AuthUiState
 
 @Composable
 fun SignInPage(
-    uiState: AuthUiState,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onBackClicked: () -> Unit,
-    onSignInClicked: () -> Unit,
+    uiState: AuthUiState, //handles the supabase Auth
+    onEmailChange: (String) -> Unit, //specifically for the user updates to email
+    onPasswordChange: (String) -> Unit, //specifically for the user updates to the password
+    onBackClicked: () -> Unit, //returns to the welcome screen
+    onSignInClicked: () -> Unit, //calls the sign in
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
+        //Back button
         Button(
             modifier = Modifier.padding(top = 25.dp, start = 10.dp),
             onClick = onBackClicked
@@ -48,24 +49,27 @@ fun SignInPage(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            //Email field for sign in
             UserSignIn(
                 label = "Email",
                 userIn = uiState.email,
                 onValueChange = onEmailChange
             )
 
+            //Password field for sign in
             UserSignIn(
                 label = "Password",
                 userIn = uiState.password,
                 onValueChange = onPasswordChange,
                 visualTransformation = VisualTransformation { text ->
                     TransformedText(
-                        AnnotatedString("*".repeat(text.text.length)),
+                        AnnotatedString("*".repeat(text.text.length)), //hides the password
                         OffsetMapping.Identity
                     )
                 }
             )
 
+            //button that calls the sign in
             Button(onClick = onSignInClicked) {
                 Text(text = "Sign In")
             }
@@ -81,6 +85,12 @@ fun UserSignIn(
     modifier: Modifier = Modifier,
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
+    /**
+     * @param label determines the expected entry for the field
+     * @param userIn the user entered information
+     * @param onValueChange function that handles the user updates to the text field
+     * creates a text field for the user to enter the expected information
+     */
     Text(text = label)
     TextField(
         value = userIn,
@@ -97,6 +107,7 @@ fun UserSignIn(
             unfocusedIndicatorColor = MaterialTheme.colorScheme.primary
         )
     )
+    //spacer added to look nice
     Spacer(modifier = Modifier.height(16.dp))
 }
 

@@ -17,18 +17,28 @@ fun WelcomeScreen(
     onSignInClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    /**
+     * @param onSignUpClicked navigates to the sign-up screen
+     * @param onSignInClicked navigates to the sign in screen
+     * creates the welcome screen with the sign in and sign up buttons
+     */
+
+    //column needed to look pretty
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
 
+        //calls navigation to sign in
         Button(onClick = onSignInClicked) {
             Text(text ="Sign In")
         }
 
+        //looks nice
         Spacer(modifier= Modifier.height(16.dp))
 
+        //calls navigation to sign-up
         Button(onClick = onSignUpClicked) {
             Text(text ="Sign Up")
         }

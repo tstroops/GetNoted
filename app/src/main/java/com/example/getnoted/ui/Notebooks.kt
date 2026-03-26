@@ -36,14 +36,14 @@ import com.example.getnoted.viewModel.NotebooksUiState
 fun NotebooksPage(
     uiState: NotebooksUiState,
     onNotebookClicked: (Notebook) -> Unit,
-    onCreateNotebookClicked: () -> Unit,
-    onDeleteNotebookClicked: () -> Unit,
+    onCreateNotebookClicked: () -> Unit, //used for displaying the create dialog
+    onDeleteNotebookClicked: () -> Unit, //used for displaying the delete dialog
     onSignOutClicked: () -> Unit,
-    onCreateConfirm: () -> Unit,
-    onDeleteConfirm: () ->Unit,
-    onCancelNb: () -> Unit,
-    onNameChange: (String) -> Unit,
-    notebooks: List<Notebook>,
+    onCreateConfirm: () -> Unit, //creates the notebook
+    onDeleteConfirm: () ->Unit, //deletes the notebook
+    onCancelNb: () -> Unit, //cancels the dialog
+    onNameChange: (String) -> Unit, //for the text field in the dialog
+    notebooks: List<Notebook>, //for displaying the notebooks obtained from supabase
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -82,6 +82,7 @@ fun NotebooksPage(
                         .padding(horizontal = 16.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
+                    //Sign out button
                     Button(onClick = { onSignOutClicked() }) {
                         Text(text = "Sign Out")
                     }
@@ -102,7 +103,7 @@ fun NotebooksPage(
                     .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val chunkedNotebooks = notebooks.chunked(3)
+                val chunkedNotebooks = notebooks.chunked(3) //sets the number of notebooks per row
                 for (row in chunkedNotebooks) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -130,6 +131,7 @@ fun NotebooksPage(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                //launches the create dialog
                 Button(
                     onClick = { onCreateNotebookClicked() },
                     modifier = Modifier.weight(1f),
@@ -143,6 +145,7 @@ fun NotebooksPage(
                     Text(text = "Create Notebook")
                 }
 
+                //launches the delete dialog
                 Button(
                     onClick = { onDeleteNotebookClicked() },
                     modifier = Modifier.weight(1f),
@@ -160,6 +163,7 @@ fun NotebooksPage(
             }
         }
 
+        //handles the create dialog display
         if (uiState.showCreate) {
             CreateNewNotebook(
                 onDismissRequest = onCancelNb,
@@ -169,6 +173,7 @@ fun NotebooksPage(
             )
         }
 
+        //handles the delete dialog display
         if (uiState.showDelete) {
             val selectedNotebook = uiState.selectedNotebook
             if (selectedNotebook != null) {
@@ -178,6 +183,7 @@ fun NotebooksPage(
                     notebookTitle = selectedNotebook.title
                 )
             } else if (notebooks.isEmpty()) {
+                //case for empty list of notebooks
                 Toast.makeText(context, "No notebooks to delete!", Toast.LENGTH_SHORT).show()
                 onCancelNb() // Reset the state since we can't show the dialog
             } else {
@@ -196,6 +202,14 @@ fun CreateNewNotebook(
     onCreateConfirm: () -> Unit,
     userIn: String
 ) {
+    /**
+     * @param onDismissRequest dismisses the dialog
+     * @param onNameChange changes the name of the notebook
+     * @param onCreateConfirm creates the notebook
+     * @param userIn the name of the notebook
+     * creates a notebook with the title the user entered
+     * the user must enter a title name to create a notebook
+     */
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
@@ -231,6 +245,12 @@ fun DeleteNotebook(
     onDeleteConfirm: () -> Unit,
     notebookTitle: String
 ) {
+    /**
+     * @param onDismissRequest dismisses the dialog
+     * @param onDeleteConfirm deletes the notebook
+     * @param notebookTitle the title of the notebook
+     * deletes the notebook the user last clicked
+     */
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = {
