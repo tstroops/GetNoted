@@ -32,4 +32,8 @@ object AuthRepository {
         supabase.auth.signOut()
 
     }
+
+    suspend fun restoreSession() {
+        supabase.auth.loadFromStorage()
+    }
 }

@@ -36,7 +36,7 @@ import kotlin.collections.chunked
 @Composable
 fun NotesPage(
     uiState: NotesUiState,
-    onNoteClicked: ()-> Unit,
+    onNoteClicked: (Note)-> Unit,
     onCreateNoteClicked: () -> Unit,
     onDeleteNoteClicked: () -> Unit,
     onConfirmCreate: () -> Unit,
@@ -112,7 +112,7 @@ fun NotesPage(
                     ) {
                         for (note in row) {
                             Button(
-                                onClick = {onNoteClicked()}, // this will navigate to that note page
+                                onClick = {onNoteClicked(note)}, // this will navigate to that note page
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(text = note.name)
@@ -165,7 +165,7 @@ fun NotesPage(
         if(uiState.showCreate){
             CreateNewNote(
                 onDismissRequest = onCancelNote,
-                uiState = NotesUiState(),
+                uiState = uiState,
                 onNameChange = onNameChange,
                 userIn = uiState.noteName,
                 onConfirmCreate = onConfirmCreate
@@ -236,7 +236,9 @@ fun DeleteNote(
             TextButton(onClick = onDismissRequest){
                 Text(text = "Cancel")
             }
-        }
+        },
+        title = { Text(text = "Delete Note") },
+        text = { Text(text = "Are you sure you want to delete this note?") }
     )
 }
 

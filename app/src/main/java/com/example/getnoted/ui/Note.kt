@@ -33,7 +33,7 @@ fun NotePage(
     modifier: Modifier = Modifier,
     onTextChanged: (String) -> Unit,
     onBackClicked: () -> Unit,
-    onSaveClicked: (String) -> Unit,
+    onSaveClicked: () -> Unit,
     text: String // so the text field knows what to display
     // Ui state/ data class can be added here
 ) {
@@ -73,10 +73,10 @@ fun NotePage(
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Button(onClick = {onSaveClicked(text); onBackClicked()}) {
+                        Button(onClick = {onSaveClicked(); onBackClicked()}) {
                             Text(text = "Back")
                         }
-                        Button(onClick = {onSaveClicked(text)}) { // add the functions passed in for the save button
+                        Button(onClick = {onSaveClicked()}) {
                             Text(text = "Save")
                         }
                     }

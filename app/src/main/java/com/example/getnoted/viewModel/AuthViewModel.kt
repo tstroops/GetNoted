@@ -144,4 +144,15 @@ class AuthViewModel: ViewModel() {
             }
         }
     }
+
+    fun signOut() {
+        viewModelScope.launch {
+            try {
+                AuthRepository.signOut()
+                _uiState.update { it.copy(authState = AuthState.NotAuthorized) }
+            } catch (e: Exception) {
+                Log.d(tag, "Sign Out Failed", e)
+            }
+        }
+    }
 }

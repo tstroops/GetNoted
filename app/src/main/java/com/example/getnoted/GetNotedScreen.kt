@@ -1,6 +1,7 @@
 package com.example.getnoted
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,23 @@ fun GetNotedScreen(
     val nbUiState by notebooksViewModel.uiState.collectAsState()
     val notesUiState by notesViewModel.uiState.collectAsState()
 
+    // Automatically detects authstate
+    LaunchedEffect(uiState.authState) {
+        when (uiState.authState) {
+            AuthState.IsAuthorized -> {
+                navController.navigate(GetNotedScreen.Notebooks.name) {
+                    popUpTo(GetNotedScreen.Welcome.name) { inclusive = true }
+                }
+            }
+            AuthState.NotAuthorized -> {
+                navController.navigate(GetNotedScreen.Welcome.name) {
+                    popUpTo(0) { inclusive = true } // Goes back to the start
+                }
+            }
+            else -> {}
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = if (uiState.authState == AuthState.IsAuthorized) GetNotedScreen.Notebooks.name
@@ -82,31 +100,43 @@ fun GetNotedScreen(
                 onEmailChange = {authViewModel.emailChanged(it)},
                 onPasswordChange = {authViewModel.passwordChanged(it)},
                 onBackClicked = {cancelAuth(navController)},
-                onSignInClicked = { authViewModel.signIn(); if(uiState.authState == AuthState.IsAuthorized) navController.navigate(GetNotedScreen.Notebooks.name)},
+                onSignInClicked = { authViewModel.signIn() },
                 modifier = modifier
             )
         }
 
         composable(route = GetNotedScreen.Notebooks.name){
-            notebooksViewModel.getNotebooks()
+            LaunchedEffect(Unit) {
+                notebooksViewModel.getNotebooks()
+            }
             NotebooksPage(
                 uiState = nbUiState,
                 onCreateNotebookClicked = {notebooksViewModel.toggleCreate()},
                 onDeleteNotebookClicked = {notebooksViewModel.toggleDelete()},
+                onSignOutClicked = { authViewModel.signOut() },
                 onCancelNb = { notebooksViewModel.cancelRequest() },
                 onNameChange = {notebooksViewModel.updateName(it)},
                 onCreateConfirm = { notebooksViewModel.createNotebook() },
                 onDeleteConfirm = { notebooksViewModel.deleteNotebook() },
-                onNotebookClicked = { navController.navigate(GetNotedScreen.Notes.name); notebooksViewModel.getNbId(0) },
+                onNotebookClicked = { notebook ->
+                    notebooksViewModel.selectNotebook(notebook)
+                    notesViewModel.setNotebookId(notebook.id)
+                    navController.navigate(GetNotedScreen.Notes.name)
+                },
                 notebooks = nbUiState.notebooks,
                 modifier = modifier
             )
         }
 
         composable(route = GetNotedScreen.Notes.name){
-            notesViewModel.getNotes()
+            LaunchedEffect(Unit) {
+                notesViewModel.getNotes()
+            }
             NotesPage(
-                onNoteClicked = {},
+                onNoteClicked = { note ->                      // receives note
+                    notesViewModel.selectNote(note)            // stores selected note
+                    navController.navigate(GetNotedScreen.Note.name)
+                },
                 notes = notesUiState.notes,
                 onCreateNoteClicked = { notesViewModel.toggleCreate() },
                 onDeleteNoteClicked = { notesViewModel.toggleDelete() },
@@ -120,13 +150,12 @@ fun GetNotedScreen(
         }
 
         composable(route = GetNotedScreen.Note.name) {
-            var noteTextStub by remember { mutableStateOf("") }
             NotePage(
                 modifier = modifier,
-                text = noteTextStub,
-                onTextChanged = { noteTextStub = it },
+                text = notesUiState.currentNoteText,
+                onTextChanged = { notesViewModel.updateNoteText(it) },
                 onBackClicked = { navController.popBackStack(route = GetNotedScreen.Notes.name, inclusive = false) },
-                onSaveClicked = { }
+                onSaveClicked = { notesViewModel.saveNote() }
             )
         }
     }
