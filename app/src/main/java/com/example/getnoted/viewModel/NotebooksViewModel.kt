@@ -5,31 +5,31 @@ import androidx.lifecycle.viewModelScope
 import com.example.getnoted.data.NotesRepository.addNotebook
 import com.example.getnoted.data.NotesRepository.getNotebooksByUser
 import com.example.getnoted.data.NotesRepository.deleteNotebook
-import com.example.getnoted.data.NotesRepository.createNotebookID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Notebook(
-    val title: String,
-    val userId: String,
-    val id: Long
+    val id: Long = 0,
+    @SerialName("Title") val title: String = "",
+    @SerialName("user") val userId: String = "",
+    @SerialName("created_at") val createdAt: String = ""
 )
 
 data class NotebooksUiState(
     val notebooks: List<Notebook> = listOf(),
     val showCreate: Boolean = false,
     val showDelete: Boolean = false,
-    val notebookName: String = ""
+    val notebookName: String = "",
+    val selectedNotebook: Notebook? = null
 )
 
 class NotebooksViewModel: ViewModel(){
-
-    private val authState = AuthUiState()
 
     private val _uiState = MutableStateFlow(NotebooksUiState())
     val uiState: StateFlow<NotebooksUiState> = _uiState.asStateFlow()
@@ -61,7 +61,7 @@ class NotebooksViewModel: ViewModel(){
     fun getNotebooks(){
         viewModelScope.launch {
             _uiState.update { currentState ->
-                currentState.copy(notebooks = getNotebooksByUser(authState.email))
+                currentState.copy(notebooks = getNotebooksByUser())
             }
 
         }
@@ -69,20 +69,23 @@ class NotebooksViewModel: ViewModel(){
 
     fun createNotebook(){
         viewModelScope.launch {
-            addNotebook(
-                Notebook(
-                    title = _uiState.value.notebookName,
-                    userId = authState.email,
-                    id = createNotebookID()
-                )
-            )
+            addNotebook(_uiState.value.notebookName,)
+            getNotebooks()
+            cancelRequest()
         }
     }
 
     fun deleteNotebook(){
         viewModelScope.launch {
-            deleteNotebook(notebookId = -1)
+            val notebookId = _uiState.value.selectedNotebook?.id ?: return@launch
+            deleteNotebook(notebookId.toInt())
+            getNotebooks()
+            cancelRequest()
         }
+    }
+
+    fun selectNotebook(notebook: Notebook) {
+        _uiState.update { it.copy(selectedNotebook = notebook) }
     }
 
     fun getNbId(index: Int): Long{

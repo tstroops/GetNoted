@@ -10,11 +10,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
+import com.example.getnoted.data.AuthRepository
+import com.example.getnoted.data.initSupabase
+import com.example.getnoted.data.supabase
 import com.example.getnoted.ui.theme.GetNotedTheme
+import io.github.jan.supabase.auth.auth
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        initSupabase(applicationContext)
+
+        lifecycleScope.launch {
+            AuthRepository.restoreSession()
+        }
+
         enableEdgeToEdge()
         setContent {
             GetNotedTheme {

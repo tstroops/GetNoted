@@ -35,9 +35,10 @@ import com.example.getnoted.viewModel.NotebooksUiState
 @Composable
 fun NotebooksPage(
     uiState: NotebooksUiState,
-    onNotebookClicked: () -> Unit,
+    onNotebookClicked: (Notebook) -> Unit,
     onCreateNotebookClicked: () -> Unit,
     onDeleteNotebookClicked: () -> Unit,
+    onSignOutClicked: () -> Unit,
     onCreateConfirm: () -> Unit,
     onDeleteConfirm: () ->Unit,
     onCancelNb: () -> Unit,
@@ -81,7 +82,7 @@ fun NotebooksPage(
                         .padding(horizontal = 16.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    Button(onClick = { /* Sign Out logic */ }) {
+                    Button(onClick = { onSignOutClicked() }) {
                         Text(text = "Sign Out")
                     }
                 }
@@ -109,7 +110,7 @@ fun NotebooksPage(
                     ) {
                         for (notebook in row) {
                             Button(
-                                onClick = { onNotebookClicked() },
+                                onClick = { onNotebookClicked(notebook) },
                                 modifier = Modifier.weight(1f),
                             ) {
                                 Text(text = notebook.title)
@@ -152,7 +153,9 @@ fun NotebooksPage(
                         disabledContentColor = Color.Black
                     )
                 ) {
-                    Text(text = "Delete Notebook")
+                    Text(text = if (uiState.selectedNotebook != null)
+                        "Delete ${uiState.selectedNotebook.title}"
+                    else "Delete Notebook")
                 }
             }
         }
@@ -167,14 +170,20 @@ fun NotebooksPage(
         }
 
         if (uiState.showDelete) {
-            if (notebooks.isNotEmpty()) {
+            val selectedNotebook = uiState.selectedNotebook
+            if (selectedNotebook != null) {
                 DeleteNotebook(
                     onDismissRequest = onCancelNb,
-                    onDeleteConfirm = onDeleteConfirm
+                    onDeleteConfirm = onDeleteConfirm,
+                    notebookTitle = selectedNotebook.title
                 )
-            } else {
+            } else if (notebooks.isEmpty()) {
                 Toast.makeText(context, "No notebooks to delete!", Toast.LENGTH_SHORT).show()
                 onCancelNb() // Reset the state since we can't show the dialog
+            } else {
+                // Case where showDelete is true but nothing is selected
+                Toast.makeText(context, "Please select a notebook first", Toast.LENGTH_SHORT).show()
+                onCancelNb()
             }
         }
     }
@@ -220,6 +229,7 @@ fun CreateNewNotebook(
 fun DeleteNotebook(
     onDismissRequest: () -> Unit,
     onDeleteConfirm: () -> Unit,
+    notebookTitle: String
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -234,7 +244,7 @@ fun DeleteNotebook(
             }
         },
         title = { Text(text = "Delete Notebook") },
-        text = { Text(text = "Are you sure you want to delete this notebook?") }
+        text = { Text(text = "Are you sure you want to delete \"$notebookTitle\"?") }
     )
 }
 
@@ -249,6 +259,7 @@ fun PreviewNotebook() {
             onDeleteNotebookClicked = {},
             onCreateConfirm = {},
             onDeleteConfirm = {},
+            onSignOutClicked = {},
             uiState = NotebooksUiState(),
             onCancelNb = {},
             notebooks = mutableListOf(Notebook(title = "Work", userId = "", id = 0), Notebook(title = "Home", userId = "", id = 1))
