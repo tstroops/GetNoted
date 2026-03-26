@@ -11,11 +11,11 @@ private val LightColorScheme = lightColorScheme(
     primary = BluePrimary,
     onPrimary = White,
     secondary = Gray700,
-    onSecondary = White,
+    onSecondary = Black,
     surface = BluePrimary,      // Your Top Bar will be Blue
-    onSurface = White,          // Text on Top Bar will be White
+    onSurface = Black,          // Text on Top Bar will be White
     background = OffWhite,      // App background
-    onBackground = Gray700      // Default text color
+    onBackground = Black      // Default text color
 )
 
     /* Other default colors to override
